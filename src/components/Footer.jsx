@@ -1,11 +1,21 @@
+import { useState } from 'react';
 import { BUSINESS } from '../data/business.js';
 import { SERVICES } from '../data/services.js';
 import { Phone, Mail, MapPin, Clock, ArrowRight } from 'lucide-react';
 import { FacebookIcon, InstagramIcon, TwitterIcon, LinkedinIcon } from './SocialIcons.jsx';
+import LegalModal from './LegalModal.jsx';
 
 const currentYear = new Date().getFullYear();
 
 export default function Footer() {
+  const [legalOpen, setLegalOpen] = useState(false);
+  const [legalTab, setLegalTab] = useState('privacy');
+
+  const openLegal = (tab) => {
+    setLegalTab(tab);
+    setLegalOpen(true);
+  };
+
   const scrollTo = (href) => {
     const el = document.querySelector(href);
     if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
@@ -138,14 +148,21 @@ export default function Footer() {
             © {currentYear} Blueline Auto Services Ltd. All rights reserved.
           </p>
           <div className="footer-legal">
-            <a href="/privacy-policy" className="footer-legal-link">Privacy Policy</a>
+            <button type="button" onClick={() => openLegal('privacy')} className="footer-legal-btn">Privacy Policy</button>
             <span aria-hidden="true">·</span>
-            <a href="/cookie-policy" className="footer-legal-link">Cookie Policy</a>
+            <button type="button" onClick={() => openLegal('cookie')} className="footer-legal-btn">Cookie Policy</button>
             <span aria-hidden="true">·</span>
-            <a href="/terms" className="footer-legal-link">Terms & Conditions</a>
+            <button type="button" onClick={() => openLegal('terms')} className="footer-legal-btn">Terms & Conditions</button>
           </div>
         </div>
       </div>
+
+      <LegalModal
+        isOpen={legalOpen}
+        onClose={() => setLegalOpen(false)}
+        activeTab={legalTab}
+        setActiveTab={setLegalTab}
+      />
 
       <style>{`
         /* Quick quote strip */
@@ -348,12 +365,19 @@ export default function Footer() {
           align-items: center;
           gap: var(--sp-sm);
         }
-        .footer-legal-link {
+        .footer-legal-link,
+        .footer-legal-btn {
           font-size: 0.8125rem;
           color: var(--grey-600);
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          font-family: inherit;
           transition: color var(--transition-fast);
         }
-        .footer-legal-link:hover { color: var(--accent-light); }
+        .footer-legal-link:hover,
+        .footer-legal-btn:hover { color: var(--accent-light); }
 
         @media (max-width: 540px) {
           .qq-inner {

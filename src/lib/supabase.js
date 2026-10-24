@@ -7,12 +7,46 @@ export const isSupabaseConfigured = Boolean(
   supabaseUrl && 
   supabaseAnonKey && 
   !supabaseUrl.includes('your-project') &&
+  !supabaseAnonKey.includes('your-anon') &&
+  !supabaseAnonKey.includes('PASTE_MY_PUBLISHABLE_KEY_HERE') &&
   supabaseUrl.startsWith('http')
 );
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+export const supabase = (() => {
+  if (!isSupabaseConfigured) return null;
+  try {
+    return createClient(supabaseUrl, supabaseAnonKey);
+  } catch (err) {
+    console.warn('Could not initialize Supabase client:', err);
+    return null;
+  }
+})();
+
+/**
+ * Diagnostic helper to test the Supabase connection to public.testimonials
+ */
+export async function testSupabaseConnection() {
+  if (!isSupabaseConfigured || !supabase) {
+    return {
+      connected: false,
+      reason: 'Supabase credentials not configured in .env (VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY required).'
+    };
+  }
+
+  try {
+    const { data, error, count } = await supabase
+      .from('testimonials')
+      .select('id', { count: 'exact', head: true });
+
+    if (error) {
+      return { connected: false, error: error.message };
+    }
+
+    return { connected: true, totalCount: count ?? 0 };
+  } catch (err) {
+    return { connected: false, error: err?.message || String(err) };
+  }
+}
 
 /**
  * Fetch all approved testimonials from Supabase (Public)

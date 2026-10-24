@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BUSINESS } from '../data/business.js';
 import { WhatsAppIcon } from './SocialIcons.jsx';
 import { X, Calendar, MapPin, User, Mail, Phone, AlertCircle, CheckCircle, Info } from 'lucide-react';
@@ -37,13 +37,36 @@ function validate(v) {
   return errs;
 }
 
-export default function BookingEnquiry({ isOpen, onClose }) {
+export default function BookingEnquiry({ isOpen, onClose, selectedVehicle }) {
   const [values,  setValues]  = useState(INITIAL);
   const [reviewMessage, setReviewMessage] = useState('');
   const [waUrl, setWaUrl] = useState('');
   const [errors,  setErrors]  = useState({});
   const [touched, setTouched] = useState({});
   const [status,  setStatus]  = useState('idle');
+
+  useEffect(() => {
+    if (isOpen) {
+      if (selectedVehicle) {
+        const catMap = {
+          'Cars': 'Car',
+          'SUVs': 'SUV',
+          'Vans': 'Large Van',
+        };
+        const mappedCat = catMap[selectedVehicle.category] || (VEHICLE_CATEGORIES.includes(selectedVehicle.category) ? selectedVehicle.category : 'Other');
+        setValues({
+          ...INITIAL,
+          category: mappedCat,
+          notes: `Enquiry regarding: ${selectedVehicle.name} (${selectedVehicle.priceDisplay || selectedVehicle.price})`,
+        });
+      } else {
+        setValues(INITIAL);
+      }
+      setStatus('idle');
+      setErrors({});
+      setTouched({});
+    }
+  }, [isOpen, selectedVehicle]);
 
   if (!isOpen) return null;
 

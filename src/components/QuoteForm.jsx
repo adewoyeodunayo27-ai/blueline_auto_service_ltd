@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SERVICES } from '../data/services.js';
 import { BUSINESS } from '../data/business.js';
 import { WhatsAppIcon } from './SocialIcons.jsx';
-import { CheckCircle, AlertCircle, Loader2, Send, Info } from 'lucide-react';
+import { CheckCircle, AlertCircle, Info } from 'lucide-react';
 
 const INITIAL_STATE = {
   fullName:       '',

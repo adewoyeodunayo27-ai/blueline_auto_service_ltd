@@ -1,5 +1,5 @@
 import { BUSINESS } from '../data/business.js';
-import { Phone, Mail, MapPin, Clock, Send, AlertCircle, CheckCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, AlertCircle } from 'lucide-react';
 import { WhatsAppIcon } from './SocialIcons.jsx';
 import { useState } from 'react';
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BUSINESS } from '../data/business.js';
-import { Phone, Mail, Clock, Menu, X, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Phone, Mail, Clock, Menu, X, ArrowRight } from 'lucide-react';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '#home' },

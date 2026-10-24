@@ -32,17 +32,29 @@ export default function Testimonials() {
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const intervalRef = useRef(null);
 
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(null);
+
   const loadReviews = useCallback(async () => {
     if (!isSupabaseConfigured) return;
+    setLoading(true);
+    setLoadError(null);
     try {
       const data = await getApprovedTestimonials();
       if (data && data.length > 0) {
         setReviews(data);
         setIsLiveFromDb(true);
         setCurrent(0);
+      } else if (data && data.length === 0) {
+        // Table exists and connected, but no approved testimonials yet
+        // Gracefully preserve fallback reviews while noting Supabase connection
+        setIsLiveFromDb(true);
       }
     } catch (err) {
       console.warn('Could not load Supabase reviews:', err);
+      setLoadError(err?.message || 'Failed to load reviews');
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -88,7 +100,12 @@ export default function Testimonials() {
           
           <div className="testimonials-header-meta">
             <div className="testimonials-notice">
-              {isLiveFromDb ? (
+              {loading ? (
+                <>
+                  <Sparkles size={14} className="notice-icon live" aria-hidden="true" />
+                  <span>Loading latest verified reviews...</span>
+                </>
+              ) : isLiveFromDb ? (
                 <>
                   <Sparkles size={14} className="notice-icon live" aria-hidden="true" />
                   <span>Verified customer reviews powered by Supabase</span>
@@ -131,7 +148,7 @@ export default function Testimonials() {
             <div className="testimonial-quote-mark">"</div>
             <StarRating rating={activeReview.rating} />
             <blockquote className="testimonial-text">
-              {activeReview.text}
+              {activeReview.text || activeReview.review}
             </blockquote>
             <div className="testimonial-author">
               <div className="testimonial-avatar" aria-hidden="true">

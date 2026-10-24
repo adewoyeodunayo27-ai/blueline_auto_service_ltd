@@ -15,7 +15,7 @@ import BookingEnquiry from './components/BookingEnquiry.jsx';
 import Contact        from './components/Contact.jsx';
 import Footer         from './components/Footer.jsx';
 
-import { MessageCircle, Phone, ChevronUp } from 'lucide-react';
+import { Phone, ChevronUp } from 'lucide-react';
 
 // ── Scroll-reveal hook ───────────────────────────────────────
 function useRevealOnScroll() {
@@ -34,7 +34,7 @@ function useRevealOnScroll() {
     const elements = document.querySelectorAll('.reveal');
     elements.forEach(el => observer.observe(el));
     return () => observer.disconnect();
-  });
+  }, []);
 }
 
 // ── Back-to-top hook ─────────────────────────────────────────
@@ -50,11 +50,18 @@ function useBackToTop() {
 
 export default function App() {
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
   const backToTopVisible = useBackToTop();
   useRevealOnScroll();
 
-  const openBooking  = useCallback(() => setBookingOpen(true),  []);
-  const closeBooking = useCallback(() => setBookingOpen(false), []);
+  const openBooking  = useCallback((vehicle = null) => {
+    setSelectedVehicle(vehicle);
+    setBookingOpen(true);
+  }, []);
+  const closeBooking = useCallback(() => {
+    setBookingOpen(false);
+    setSelectedVehicle(null);
+  }, []);
 
   const whatsappMsg = encodeURIComponent(
     'Hello Blueline Auto Services Ltd, I would like to enquire about your automotive services.'
@@ -115,7 +122,7 @@ export default function App() {
       </button>
 
       {/* Booking enquiry modal */}
-      <BookingEnquiry isOpen={bookingOpen} onClose={closeBooking} />
+      <BookingEnquiry isOpen={bookingOpen} onClose={closeBooking} selectedVehicle={selectedVehicle} />
     </>
   );
 }
