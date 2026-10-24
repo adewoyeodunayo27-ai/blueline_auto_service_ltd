@@ -25,8 +25,7 @@ export default function PriceList() {
           <div className="divider" />
           <div className="price-disclaimer reveal" style={{ marginTop: 'var(--sp-md)' }}>
             <Info size={14} aria-hidden="true" />
-            Prices are currently shown as "Request a Quote". Once confirmed by the business, actual
-            prices will be displayed here. All prices are subject to change without notice.
+            Transparent and competitive pricing in British pounds (£). All prices include standard UK parts, labour, and guarantee.
           </div>
         </header>
 
@@ -163,7 +162,8 @@ export default function PriceList() {
           background: var(--white);
           border-radius: var(--radius-lg);
           box-shadow: var(--shadow-md);
-          overflow: hidden;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
         }
 
         .price-table-header {
@@ -180,6 +180,7 @@ export default function PriceList() {
 
         .price-table {
           width: 100%;
+          min-width: 280px;
           border-collapse: collapse;
           font-size: 0.9375rem;
         }
@@ -208,7 +209,10 @@ export default function PriceList() {
           background: var(--grey-100);
         }
 
-        .price-col { text-align: right; }
+        .price-col { 
+          text-align: right; 
+          white-space: nowrap;
+        }
 
         .price-value {
           font-weight: 700;
@@ -238,6 +242,43 @@ export default function PriceList() {
           font-size: 0.875rem;
           color: var(--grey-600);
           flex: 1;
+        }
+
+        @media (max-width: 640px) {
+          .price-table-header {
+            padding: 1rem 1.25rem;
+          }
+          .price-table th,
+          .price-table td {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+          }
+          .price-value {
+            font-size: 0.95rem;
+          }
+          .price-table-footer {
+            padding: 1.25rem 1rem;
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+          }
+          .price-table-footer .btn {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .price-table th,
+          .price-table td {
+            padding: 0.65rem 0.65rem;
+            font-size: 0.8125rem;
+          }
+          .price-tab {
+            padding: 0.65rem 0.85rem;
+            font-size: 0.8125rem;
+            width: 100%;
+          }
         }
       `}</style>
     </section>

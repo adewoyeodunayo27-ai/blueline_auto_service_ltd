@@ -48,6 +48,7 @@ export default function Footer() {
                 <div>
                   <span className="footer-logo-name">BLUELINE</span>
                   <span className="footer-logo-sub">AUTO SERVICES LTD</span>
+                  <span className="footer-logo-slogan">Driven by Trust. Powered by Excellence.</span>
                 </div>
               </div>
               <p className="footer-brand-desc">
@@ -237,6 +238,16 @@ export default function Footer() {
           text-transform: uppercase;
         }
 
+        .footer-logo-slogan {
+          font-family: var(--font-body);
+          font-size: 0.625rem;
+          font-weight: 600;
+          color: var(--blue-300);
+          letter-spacing: 0.02em;
+          margin-top: 3px;
+          line-height: 1.2;
+        }
+
         .footer-brand-desc {
           color: var(--grey-500);
           font-size: 0.875rem;
@@ -343,6 +354,35 @@ export default function Footer() {
           transition: color var(--transition-fast);
         }
         .footer-legal-link:hover { color: var(--accent-light); }
+
+        @media (max-width: 540px) {
+          .qq-inner {
+            flex-direction: column;
+            text-align: center;
+            gap: var(--sp-md);
+          }
+          .qq-actions {
+            flex-direction: column;
+            width: 100%;
+          }
+          .qq-actions .btn {
+            width: 100%;
+            justify-content: center;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .footer-bottom-inner {
+            flex-direction: column;
+            text-align: center;
+            justify-content: center;
+            gap: 0.5rem;
+          }
+          .footer-legal {
+            justify-content: center;
+            flex-wrap: wrap;
+          }
+        }
       `}</style>
     </footer>
   );

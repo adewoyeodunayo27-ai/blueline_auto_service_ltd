@@ -72,23 +72,23 @@ export default function BookingEnquiry({ isOpen, onClose }) {
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    // Format hire enquiry for WhatsApp
+    // Format hire enquiry for WhatsApp (clean ASCII to prevent encoding corruption)
     const lines = [
       `*VEHICLE HIRE ENQUIRY*`,
       `*Blueline Auto Services Ltd*`,
-      `────────────────────────────`,
-      `🚗 *Category:* ${values.category}`,
-      `📅 *Collection Date:* ${values.collectionDate}`,
-      `📅 *Return Date:* ${values.returnDate}`,
-      `📍 *Collection Location:* ${values.collectionLocation}`,
-      `📍 *Return Location:* ${values.returnLocation}`,
-      `────────────────────────────`,
-      `👤 *Name:* ${values.name.trim()}`,
-      `📧 *Email:* ${values.email.trim()}`,
-      `📞 *Phone:* ${values.phone.trim()}`,
-      values.notes.trim() ? `📝 *Requirements:*\n${values.notes.trim()}` : null,
-      `────────────────────────────`,
-      `📍 _Sent from Blueline Auto Services website_`
+      `--------------------------------`,
+      `*Category:* ${values.category}`,
+      `*Collection Date:* ${values.collectionDate}`,
+      `*Return Date:* ${values.returnDate}`,
+      `*Collection Location:* ${values.collectionLocation}`,
+      `*Return Location:* ${values.returnLocation}`,
+      `--------------------------------`,
+      `*Customer Name:* ${values.name.trim()}`,
+      `*Email:* ${values.email.trim()}`,
+      `*Phone:* ${values.phone.trim()}`,
+      values.notes.trim() ? `*Requirements:*\n${values.notes.trim()}` : null,
+      `--------------------------------`,
+      `_Sent from Blueline Auto Services website_`
     ].filter(Boolean).join('\n');
 
     const url = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(lines)}`;
@@ -352,6 +352,22 @@ export default function BookingEnquiry({ isOpen, onClose }) {
           justify-content: flex-end;
           gap: var(--sp-sm);
           margin-top: var(--sp-lg);
+        }
+        @media (max-width: 640px) {
+          .booking-header {
+            padding: 1.25rem 1rem 1rem;
+          }
+          .booking-form {
+            padding: 1.25rem 1rem;
+          }
+          .booking-actions {
+            flex-direction: column-reverse;
+          }
+          .booking-actions button,
+          .booking-actions a {
+            width: 100%;
+            justify-content: center;
+          }
         }
         .booking-success {
           padding: var(--sp-2xl) var(--sp-xl);

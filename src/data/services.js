@@ -131,9 +131,9 @@ export const PRICE_LIST = [
       { name: 'Brake Discs & Pads (Front or Rear)', price: 'From £145.00' },
       { name: 'Battery Testing & Replacement', price: 'From £85.00' },
       { name: 'Wheel Alignment & Balancing (4-Wheel Laser)', price: '£50.00' },
-      { name: 'Clutch Replacement', price: 'Request a Quote' },
-      { name: 'Timing Belt / Water Pump Replacement', price: 'Request a Quote' },
-      { name: 'Suspension & Shock Absorber Repairs', price: 'Request a Quote' },
+      { name: 'Clutch Replacement', price: 'From £295.00' },
+      { name: 'Timing Belt / Water Pump Replacement', price: 'From £245.00' },
+      { name: 'Suspension & Shock Absorber Repairs', price: 'From £95.00' },
     ]
   },
   {
@@ -146,7 +146,7 @@ export const PRICE_LIST = [
       { name: 'Small Panel Van (Short Wheelbase)', price: '£50.00 / day' },
       { name: 'Large Luton Van (Tail Lift Included)', price: '£75.00 / day' },
       { name: 'Weekly Hire Discount (7+ Days)', price: '15% Off' },
-      { name: 'Long Term Monthly Corporate Lease', price: 'Request a Quote' },
+      { name: 'Long Term Monthly Corporate Lease', price: 'From £350.00 / mo' },
     ]
   },
   {
@@ -168,8 +168,8 @@ export const PRICE_LIST = [
       { name: 'Local Breakdown Recovery (Doncaster Area)', price: 'From £60.00' },
       { name: 'Emergency Call-out (Out of Hours)', price: 'From £85.00' },
       { name: 'Nationwide Vehicle Transport (Per Loaded Mile)', price: '£1.80 / mile' },
-      { name: 'Accident Recovery & Secure Storage', price: 'Request a Quote' },
-      { name: 'Auction / Dealership Vehicle Collection', price: 'Request a Quote' },
+      { name: 'Accident Recovery & Secure Storage', price: 'From £120.00' },
+      { name: 'Auction / Dealership Vehicle Collection', price: 'From £75.00' },
     ]
   }
 ];

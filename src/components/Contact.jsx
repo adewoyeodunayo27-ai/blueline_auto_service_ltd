@@ -50,20 +50,20 @@ function ContactForm() {
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    // Structured review message for WhatsApp
+    // Structured review message for WhatsApp (clean ASCII to prevent encoding corruption)
     const lines = [
       `*NEW CONTACT ENQUIRY*`,
       `*Blueline Auto Services Ltd*`,
-      `────────────────────────────`,
-      `👤 *Name:* ${values.name.trim()}`,
-      `📧 *Email:* ${values.email.trim()}`,
-      values.phone.trim() ? `📞 *Phone:* ${values.phone.trim()}` : null,
-      `🔧 *Service:* ${values.service}`,
-      `────────────────────────────`,
-      `💬 *Message:*`,
+      `--------------------------------`,
+      `*Name:* ${values.name.trim()}`,
+      `*Email:* ${values.email.trim()}`,
+      values.phone.trim() ? `*Phone:* ${values.phone.trim()}` : null,
+      `*Service Required:* ${values.service}`,
+      `--------------------------------`,
+      `*Message:*`,
       `${values.message.trim()}`,
-      `────────────────────────────`,
-      `📍 _Sent from Blueline Auto Services website_`
+      `--------------------------------`,
+      `_Sent from Blueline Auto Services website_`
     ].filter(Boolean).join('\n');
 
     const url = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(lines)}`;
@@ -434,6 +434,20 @@ export default function Contact() {
           border-radius: var(--radius-xl);
           padding: var(--sp-xl);
           box-shadow: var(--shadow-md);
+        }
+
+        @media (max-width: 640px) {
+          .contact-info-card {
+            padding: 1.25rem 1rem;
+            border-radius: var(--radius-lg);
+          }
+          .contact-form-card {
+            padding: 1.25rem 1rem;
+            border-radius: var(--radius-lg);
+          }
+          .contact-detail {
+            gap: 0.75rem;
+          }
         }
 
         .contact-form-heading {

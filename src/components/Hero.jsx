@@ -1,4 +1,5 @@
 import { ShieldCheck, Wrench, Tag, Heart, ChevronDown } from 'lucide-react';
+import heroCarImg from '../assets/hero-car.jpg';
 
 const TRUST_POINTS = [
   {
@@ -36,12 +37,13 @@ export default function Hero() {
       {/* Background imagery with dark blue tint */}
       <div className="hero-bg" aria-hidden="true">
         <img
-          src="https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=1800&q=85"
-          alt=""
+          src={heroCarImg}
+          alt="Premium executive car in modern automotive showroom and specialist service center"
           className="hero-bg-img"
           loading="eager"
+          fetchPriority="high"
           onError={(e) => {
-            e.target.src = 'https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1800&q=85';
+            e.target.src = '/hero-car.jpg';
           }}
         />
         <div className="hero-overlay" />
@@ -49,6 +51,11 @@ export default function Hero() {
 
       <div className="container hero-container">
         <div className="hero-content">
+          <div className="hero-welcome-badge">
+            <span className="welcome-pulse-dot" aria-hidden="true" />
+            <span>Welcome to BLUELINE AUTO SERVICES LTD</span>
+          </div>
+
           <h1 className="hero-title">
             Your Trusted <span className="hero-highlight">Automotive</span> Partner
           </h1>
@@ -62,9 +69,9 @@ export default function Hero() {
             <button
               className="btn btn--primary btn--lg"
               onClick={() => scrollTo('#services')}
-              aria-label="View our services"
+              aria-label="Explore our automotive services"
             >
-              Our Services
+              Explore Our Services
             </button>
             <button
               className="btn btn--outline btn--lg"
@@ -121,40 +128,73 @@ export default function Hero() {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          object-position: center 40%;
+          object-position: 55% 45%;
         }
 
         .hero-overlay {
           position: absolute;
           inset: 0;
           background: linear-gradient(
-            135deg,
-            rgba(13,27,62,.88) 0%,
-            rgba(13,27,62,.75) 50%,
-            rgba(13,27,62,.55) 100%
+            105deg,
+            rgba(10, 22, 53, 0.90) 0%,
+            rgba(10, 22, 53, 0.76) 42%,
+            rgba(10, 22, 53, 0.42) 75%,
+            rgba(10, 22, 53, 0.58) 100%
           );
         }
 
         .hero-container {
           position: relative;
           z-index: 1;
-          padding-top: var(--sp-4xl);
-          padding-bottom: calc(var(--sp-4xl) + 2rem);
+          padding-top: clamp(2rem, 4vw, 4rem);
+          padding-bottom: clamp(2.5rem, 5vw, 5rem);
+          width: 100%;
+        }
+
+        .hero-welcome-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: rgba(29, 111, 235, 0.22);
+          border: 1px solid rgba(59, 130, 246, 0.45);
+          backdrop-filter: blur(8px);
+          color: #93C5FD;
+          font-family: var(--font-body);
+          font-size: clamp(0.72rem, 1.8vw, 0.85rem);
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+          padding: 0.35rem 0.95rem;
+          border-radius: var(--radius-full);
+          margin-bottom: var(--sp-md);
+          max-width: 100%;
+          line-height: 1.3;
+        }
+
+        .welcome-pulse-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #38BDF8;
+          box-shadow: 0 0 8px #38BDF8;
+          flex-shrink: 0;
+          animation: topbarDotPulse 2s infinite ease-in-out;
         }
 
         .hero-content {
           max-width: 720px;
-          margin-bottom: var(--sp-4xl);
+          margin-bottom: clamp(2rem, 4vw, var(--sp-4xl));
         }
 
         .hero-title {
           font-family: var(--font-display);
-          font-size: clamp(2.25rem, 5.5vw, 4.25rem);
+          font-size: clamp(2rem, 5.2vw, 4.25rem);
           font-weight: 900;
           color: var(--white);
-          line-height: 1.08;
-          margin-bottom: var(--sp-lg);
+          line-height: 1.1;
+          margin-bottom: var(--sp-md);
           letter-spacing: -0.02em;
+          word-wrap: break-word;
         }
 
         .hero-highlight {
@@ -164,8 +204,8 @@ export default function Hero() {
         }
 
         .hero-subtitle {
-          font-size: clamp(1rem, 2vw, 1.25rem);
-          color: rgba(255,255,255,.82);
+          font-size: clamp(0.9375rem, 1.8vw, 1.25rem);
+          color: rgba(255,255,255,.86);
           line-height: 1.65;
           margin-bottom: var(--sp-xl);
           max-width: 580px;
@@ -250,21 +290,51 @@ export default function Hero() {
         }
 
         @media (max-width: 900px) {
+          .hero-bg-img {
+            object-position: 50% 45%;
+          }
+          .hero-overlay {
+            background: linear-gradient(
+              180deg,
+              rgba(10, 22, 53, 0.90) 0%,
+              rgba(10, 22, 53, 0.72) 42%,
+              rgba(10, 22, 53, 0.85) 100%
+            );
+          }
           .hero-trust {
             grid-template-columns: repeat(2, 1fr);
           }
         }
 
         @media (max-width: 560px) {
+          .hero-bg-img {
+            object-position: 48% 45%;
+          }
+          .hero-welcome-badge {
+            font-size: 0.71875rem;
+            padding: 0.3rem 0.75rem;
+            letter-spacing: 0.03em;
+          }
           .hero-trust {
             grid-template-columns: 1fr;
           }
+          .trust-item {
+            padding: var(--sp-md);
+          }
           .hero-actions {
             flex-direction: column;
+            width: 100%;
           }
           .hero-actions .btn {
             width: 100%;
             justify-content: center;
+          }
+        }
+
+        @media (max-width: 360px) {
+          .hero-welcome-badge {
+            font-size: 0.65rem;
+            padding: 0.25rem 0.6rem;
           }
         }
       `}</style>

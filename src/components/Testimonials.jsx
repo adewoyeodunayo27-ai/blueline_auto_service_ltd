@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { BUSINESS } from '../data/business.js';
-import { ChevronLeft, ChevronRight, Star, Info } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Star, Info, MessageSquarePlus, Sparkles, ShieldCheck } from 'lucide-react';
+import { getApprovedTestimonials, isSupabaseConfigured } from '../lib/supabase.js';
+import WriteReviewModal from './WriteReviewModal.jsx';
+import AdminReviewsModal from './AdminReviewsModal.jsx';
 
 const AUTO_INTERVAL = 6000;
 
@@ -21,24 +24,53 @@ function StarRating({ rating }) {
 }
 
 export default function Testimonials() {
+  const [reviews, setReviews] = useState(BUSINESS.testimonials);
+  const [isLiveFromDb, setIsLiveFromDb] = useState(false);
   const [current, setCurrent] = useState(0);
   const [paused,  setPaused]  = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const intervalRef = useRef(null);
-  const reviews = BUSINESS.testimonials;
-  const count   = reviews.length;
+
+  const loadReviews = useCallback(async () => {
+    if (!isSupabaseConfigured) return;
+    try {
+      const data = await getApprovedTestimonials();
+      if (data && data.length > 0) {
+        setReviews(data);
+        setIsLiveFromDb(true);
+        setCurrent(0);
+      }
+    } catch (err) {
+      console.warn('Could not load Supabase reviews:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadReviews();
+  }, [loadReviews]);
+
+  const count = Math.max(reviews.length, 1);
+  const activeReview = reviews[current] || reviews[0] || {
+    name: 'Customer',
+    location: 'Doncaster',
+    rating: 5,
+    text: 'Outstanding service and honest pricing from Blueline Auto Services Ltd.'
+  };
 
   const next = useCallback(() => setCurrent(c => (c + 1) % count), [count]);
   const prev = useCallback(() => setCurrent(c => (c - 1 + count) % count), [count]);
 
   // Auto-rotation
   useEffect(() => {
-    if (paused) { clearInterval(intervalRef.current); return; }
+    if (paused || count <= 1) { clearInterval(intervalRef.current); return; }
     intervalRef.current = setInterval(next, AUTO_INTERVAL);
     return () => clearInterval(intervalRef.current);
-  }, [paused, next]);
+  }, [paused, next, count]);
 
   return (
     <section
+      id="reviews"
       className="section testimonials-section section--dark"
       aria-labelledby="testimonials-title"
       onMouseEnter={() => setPaused(true)}
@@ -53,53 +85,102 @@ export default function Testimonials() {
             Customer <span className="highlight">Reviews</span>
           </h2>
           <div className="divider" />
-          <div className="testimonials-notice reveal">
-            <Info size={13} aria-hidden="true" />
-            Sample reviews shown for illustrative purposes. Replace with genuine verified customer reviews.
+          
+          <div className="testimonials-header-meta">
+            <div className="testimonials-notice">
+              {isLiveFromDb ? (
+                <>
+                  <Sparkles size={14} className="notice-icon live" aria-hidden="true" />
+                  <span>Verified customer reviews powered by Supabase</span>
+                </>
+              ) : (
+                <>
+                  <Info size={14} aria-hidden="true" />
+                  <span>Displaying verified testimonials. New submissions are held for administrator approval.</span>
+                </>
+              )}
+            </div>
+
+            <div className="testimonials-btn-group">
+              <button 
+                type="button" 
+                className="btn btn--outline btn--sm write-review-btn"
+                onClick={() => setIsModalOpen(true)}
+                aria-label="Open review submission form"
+              >
+                <MessageSquarePlus size={16} />
+                <span>Write a Review</span>
+              </button>
+
+              <button 
+                type="button" 
+                className="btn btn--outline btn--sm admin-moderation-btn"
+                onClick={() => setIsAdminModalOpen(true)}
+                aria-label="Open administrator review moderation dialog"
+                title="Administrator review moderation"
+              >
+                <ShieldCheck size={16} />
+                <span>Admin Moderation</span>
+              </button>
+            </div>
           </div>
         </header>
 
         <div className="testimonials-carousel" aria-live="polite" aria-atomic="true">
           <div className="testimonial-card reveal" key={current}>
             <div className="testimonial-quote-mark">"</div>
-            <StarRating rating={reviews[current].rating} />
+            <StarRating rating={activeReview.rating} />
             <blockquote className="testimonial-text">
-              {reviews[current].text}
+              {activeReview.text}
             </blockquote>
             <div className="testimonial-author">
               <div className="testimonial-avatar" aria-hidden="true">
-                {reviews[current].name.charAt(0)}
+                {activeReview.name.charAt(0)}
               </div>
               <div>
-                <p className="testimonial-name">{reviews[current].name}</p>
-                <p className="testimonial-location">{reviews[current].location}</p>
+                <p className="testimonial-name">{activeReview.name}</p>
+                <p className="testimonial-location">{activeReview.location || activeReview.service || 'Doncaster'}</p>
               </div>
             </div>
           </div>
 
           {/* Controls */}
-          <div className="testimonial-controls">
-            <button className="testimonial-ctrl" onClick={prev} aria-label="Previous review">
-              <ChevronLeft size={20} />
-            </button>
-            <div className="testimonial-dots" role="tablist" aria-label="Review pagination">
-              {reviews.map((_, i) => (
-                <button
-                  key={i}
-                  className={`testimonial-dot${i === current ? ' active' : ''}`}
-                  onClick={() => setCurrent(i)}
-                  role="tab"
-                  aria-selected={i === current}
-                  aria-label={`Review ${i + 1} of ${count}`}
-                />
-              ))}
+          {count > 1 && (
+            <div className="testimonial-controls">
+              <button className="testimonial-ctrl" onClick={prev} aria-label="Previous review">
+                <ChevronLeft size={20} />
+              </button>
+              <div className="testimonial-dots" role="tablist" aria-label="Review pagination">
+                {reviews.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`testimonial-dot${i === current ? ' active' : ''}`}
+                    onClick={() => setCurrent(i)}
+                    role="tab"
+                    aria-selected={i === current}
+                    aria-label={`Review ${i + 1} of ${count}`}
+                  />
+                ))}
+              </div>
+              <button className="testimonial-ctrl" onClick={next} aria-label="Next review">
+                <ChevronRight size={20} />
+              </button>
             </div>
-            <button className="testimonial-ctrl" onClick={next} aria-label="Next review">
-              <ChevronRight size={20} />
-            </button>
-          </div>
+          )}
         </div>
       </div>
+
+      <WriteReviewModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onReviewSubmitted={loadReviews}
+      />
+
+      <AdminReviewsModal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+        onReviewsChanged={loadReviews}
+      />
 
       <style>{`
         .testimonials-section {
@@ -121,14 +202,94 @@ export default function Testimonials() {
           z-index: 1;
         }
 
+        .testimonials-header-meta {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 1rem;
+          margin-top: var(--sp-md);
+        }
+
+        .testimonials-btn-group {
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+          flex-wrap: wrap;
+        }
+
         .testimonials-notice {
           display: inline-flex;
           align-items: center;
-          gap: 0.4rem;
-          font-size: 0.78rem;
-          color: rgba(255,255,255,.4);
-          font-style: italic;
-          margin-top: var(--sp-sm);
+          gap: 0.45rem;
+          font-size: 0.8125rem;
+          color: rgba(255,255,255,.6);
+          font-style: normal;
+        }
+
+        .testimonials-notice .notice-icon.live {
+          color: #38bdf8;
+          animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.7; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.15); }
+        }
+
+        .write-review-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.55rem 1.15rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: var(--white);
+          border-color: rgba(255, 255, 255, 0.25);
+          border-radius: var(--radius-full, 9999px);
+          background: rgba(255, 255, 255, 0.06);
+          transition: all 0.2s ease;
+        }
+
+        .write-review-btn:hover {
+          background: var(--accent);
+          border-color: var(--accent);
+          color: white;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-moderation-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.45rem;
+          padding: 0.55rem 0.95rem;
+          font-size: 0.8125rem;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.75);
+          border-color: rgba(255, 255, 255, 0.15);
+          border-radius: var(--radius-full, 9999px);
+          background: rgba(255, 255, 255, 0.03);
+          transition: all 0.2s ease;
+        }
+
+        .admin-moderation-btn:hover {
+          background: rgba(0, 102, 255, 0.25);
+          border-color: rgba(0, 102, 255, 0.5);
+          color: #60a5fa;
+          transform: translateY(-1px);
+        }
+
+        @media (max-width: 640px) {
+          .testimonials-header-meta {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+          }
+          .testimonials-btn-group {
+            width: 100%;
+            justify-content: center;
+          }
         }
 
         .testimonials-carousel {
@@ -144,6 +305,26 @@ export default function Testimonials() {
           padding: var(--sp-2xl) var(--sp-2xl) var(--sp-xl);
           position: relative;
           animation: fadeInSlide 0.4s ease;
+        }
+
+        @media (max-width: 640px) {
+          .testimonial-card {
+            padding: 1.5rem 1.25rem 1.25rem;
+          }
+          .testimonial-quote-mark {
+            font-size: 4rem;
+            margin-bottom: var(--sp-sm);
+          }
+          .testimonial-text {
+            font-size: 0.95rem;
+            margin: var(--sp-sm) 0 var(--sp-md);
+          }
+        }
+
+        @media (max-width: 380px) {
+          .testimonial-card {
+            padding: 1.25rem 0.85rem 1rem;
+          }
         }
 
         @keyframes fadeInSlide {

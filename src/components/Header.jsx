@@ -20,23 +20,40 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const closeMobile = useCallback(() => setMobileOpen(false), []);
+  const closeMobile = useCallback(() => {
+    setMobileOpen(false);
+    document.body.style.overflow = '';
+  }, []);
 
   const handleNavClick = useCallback((e, href) => {
     e.preventDefault();
-    closeMobile();
+    // 1. Immediately unlock body scroll so window.scrollTo is not blocked by mobile menu overflow lock
+    document.body.style.overflow = '';
+    setMobileOpen(false);
+
+    if (href === '#home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     const target = document.querySelector(href);
     if (target) {
-      const headerTotal = parseInt(
-        getComputedStyle(document.documentElement).getPropertyValue('--header-total') || '128'
-      );
-      const targetPos = target.getBoundingClientRect().top + window.pageYOffset - (headerTotal - 10);
-      window.scrollTo({
-        top: Math.max(0, targetPos),
-        behavior: 'smooth',
-      });
+      // 2. Allow drawer close transition to start, then scroll smoothly with fixed header offset
+      setTimeout(() => {
+        document.body.style.overflow = '';
+        const headerTotal = parseInt(
+          getComputedStyle(document.documentElement).getPropertyValue('--header-total') || '138',
+          10
+        );
+        const rect = target.getBoundingClientRect();
+        const targetPos = rect.top + window.pageYOffset - (headerTotal - 6);
+        window.scrollTo({
+          top: Math.max(0, targetPos),
+          behavior: 'smooth',
+        });
+      }, 30);
     }
-  }, [closeMobile]);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
@@ -51,7 +68,15 @@ export default function Header() {
       <div className="header-topbar" role="region" aria-label="Contact Information Bar">
         <div className="container topbar-container">
           <div className="topbar-inner">
-            {/* Clickable Phone and Email */}
+            {/* Status / Badge (Desktop Left) */}
+            <div className="topbar-meta topbar-meta--left">
+              <span className="topbar-badge">
+                <span className="badge-pulse-dot" aria-hidden="true" />
+                <span>24/7 Breakdown Recovery</span>
+              </span>
+            </div>
+
+            {/* Clickable Phone and Email (Centered where space allows, neatly arranged on mobile) */}
             <div className="topbar-contacts">
               <a
                 href={`tel:${BUSINESS.phone}`}
@@ -62,7 +87,7 @@ export default function Header() {
                 <span className="topbar-text">{BUSINESS.phoneDisplay}</span>
               </a>
 
-              <span className="topbar-sep" aria-hidden="true">|</span>
+              <span className="topbar-divider" aria-hidden="true">•</span>
 
               <a
                 href={`mailto:${BUSINESS.email}`}
@@ -74,12 +99,8 @@ export default function Header() {
               </a>
             </div>
 
-            {/* Business Status & Hours (Tablet/Desktop) */}
-            <div className="topbar-meta">
-              <span className="topbar-badge">
-                <span className="badge-pulse-dot" aria-hidden="true" />
-                <span>24/7 Breakdown Recovery</span>
-              </span>
+            {/* Hours (Desktop Right) */}
+            <div className="topbar-meta topbar-meta--right">
               <span className="topbar-hours">
                 <Clock size={12} aria-hidden="true" />
                 <span>Mon–Fri 08:30–18:00</span>
@@ -96,7 +117,7 @@ export default function Header() {
       >
         <div className="container header-container">
           <div className="header-inner">
-            {/* Logo & Company Name */}
+            {/* Logo, Company Name & Slogan */}
             <a
               href="#home"
               className="brand-logo"
@@ -109,8 +130,11 @@ export default function Header() {
                 className="brand-logo-img"
               />
               <div className="brand-logo-text">
-                <span className="brand-name">BLUELINE</span>
-                <span className="brand-tagline">AUTO SERVICES LTD</span>
+                <div className="brand-title-wrap">
+                  <span className="brand-name">BLUELINE</span>
+                  <span className="brand-tagline">AUTO SERVICES LTD</span>
+                </div>
+                <span className="brand-slogan">Driven by Trust. Powered by Excellence.</span>
               </div>
             </a>
 
@@ -168,12 +192,15 @@ export default function Header() {
         aria-label="Mobile Navigation Menu"
       >
         <div className="mobile-nav-inner">
-          {/* Mobile Header Brand Display */}
+          {/* Mobile Header Brand Display with Slogan */}
           <div className="mobile-brand-bar">
             <img src="/logo.png" alt="Blueline Auto Services Ltd Logo" className="mobile-logo-thumb" />
-            <div>
-              <div className="mobile-brand-title">BLUELINE</div>
-              <div className="mobile-brand-sub">AUTO SERVICES LTD</div>
+            <div className="mobile-brand-text">
+              <div className="mobile-brand-title-wrap">
+                <span className="mobile-brand-title">BLUELINE</span>
+                <span className="mobile-brand-sub">AUTO SERVICES LTD</span>
+              </div>
+              <span className="mobile-brand-slogan">Driven by Trust. Powered by Excellence.</span>
             </div>
           </div>
 
@@ -237,7 +264,8 @@ export default function Header() {
            ══════════════════════════════════════════════════════ */
         .header-topbar {
           background: #0B1528;
-          height: var(--header-top, 42px);
+          min-height: var(--header-top, 46px);
+          padding: 0.3rem 0;
           position: fixed;
           top: 0;
           left: 0;
@@ -256,27 +284,70 @@ export default function Header() {
         .topbar-inner {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: center;
+          position: relative;
+          width: 100%;
           gap: 1rem;
         }
 
+        @media (min-width: 1025px) {
+          .topbar-inner {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+          }
+          .topbar-meta--right {
+            justify-self: end;
+          }
+        }
+
         .topbar-contacts {
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          gap: 0.875rem;
-          white-space: nowrap;
+          justify-content: center;
+          gap: 0.85rem;
+          margin: 0 auto;
+          line-height: 1.25;
+          text-align: center;
+          flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+          .topbar-contacts {
+            gap: 0.25rem 0.75rem;
+            width: 100%;
+          }
+        }
+
+        @media (max-width: 500px) {
+          .topbar-contacts {
+            flex-direction: column;
+            gap: 0.15rem;
+            align-items: center;
+          }
+          .topbar-divider {
+            display: none;
+          }
+        }
+
+        .topbar-divider {
+          color: rgba(255, 255, 255, 0.3);
+          font-size: 0.75rem;
+          user-select: none;
         }
 
         .topbar-link {
           display: inline-flex;
           align-items: center;
-          gap: 0.45rem;
+          justify-content: center;
+          gap: 0.4rem;
           color: #FFFFFF;
           text-decoration: none;
           font-size: 0.8125rem;
           font-weight: 500;
           letter-spacing: 0.01em;
           transition: color 0.2s ease, opacity 0.2s ease;
+          white-space: nowrap;
         }
 
         .topbar-link:hover {
@@ -288,19 +359,13 @@ export default function Header() {
           flex-shrink: 0;
         }
 
-        .topbar-sep {
-          color: rgba(255, 255, 255, 0.25);
-          font-size: 0.75rem;
-          user-select: none;
-        }
-
         .topbar-meta {
           display: none;
           align-items: center;
           gap: 1rem;
         }
 
-        @media (min-width: 900px) {
+        @media (min-width: 1025px) {
           .topbar-meta {
             display: flex;
           }
@@ -342,14 +407,14 @@ export default function Header() {
         }
 
         /* ══════════════════════════════════════════════════════
-           2. MAIN SITE HEADER (White Background, Automotive Style)
+           2. MAIN SITE HEADER
            ══════════════════════════════════════════════════════ */
         .site-header {
           position: fixed;
-          top: var(--header-top, 42px);
+          top: var(--header-top, 46px);
           left: 0;
           right: 0;
-          height: var(--header-main, 86px);
+          height: var(--header-main, 84px);
           background: #FFFFFF;
           border-bottom: 1px solid #E2E8F0;
           z-index: 999;
@@ -368,16 +433,17 @@ export default function Header() {
           align-items: center;
           justify-content: space-between;
           height: 100%;
-          gap: 1.5rem;
+          gap: 1rem;
         }
 
         /* ── Brand Logo & Text ── */
         .brand-logo {
           display: flex;
           align-items: center;
-          gap: 0.875rem;
+          gap: 0.75rem;
           text-decoration: none;
           flex-shrink: 0;
+          min-width: 0;
           transition: transform 0.2s ease;
         }
 
@@ -387,8 +453,8 @@ export default function Header() {
         }
 
         .brand-logo-img {
-          width: 58px;
-          height: 58px;
+          width: 52px;
+          height: 52px;
           border-radius: 50%;
           object-fit: cover;
           flex-shrink: 0;
@@ -400,7 +466,15 @@ export default function Header() {
         .brand-logo-text {
           display: flex;
           flex-direction: column;
-          line-height: 1.1;
+          line-height: 1.15;
+          min-width: 0;
+        }
+
+        .brand-title-wrap {
+          display: flex;
+          align-items: baseline;
+          gap: 0.35rem;
+          flex-wrap: wrap;
         }
 
         .brand-name {
@@ -410,6 +484,7 @@ export default function Header() {
           color: #0B1528;
           letter-spacing: 0.04em;
           transition: color 0.2s ease;
+          line-height: 1.1;
         }
 
         .brand-logo:hover .brand-name {
@@ -418,11 +493,70 @@ export default function Header() {
 
         .brand-tagline {
           font-family: var(--font-body, 'Inter', sans-serif);
-          font-size: 0.6rem;
+          font-size: 0.65rem;
           font-weight: 700;
-          letter-spacing: 0.12em;
+          letter-spacing: 0.1em;
           color: #475569;
           text-transform: uppercase;
+        }
+
+        .brand-slogan {
+          font-family: var(--font-body, 'Inter', sans-serif);
+          font-size: 0.6875rem;
+          font-weight: 600;
+          color: #1D6FEB;
+          letter-spacing: 0.015em;
+          margin-top: 2px;
+          line-height: 1.2;
+          white-space: nowrap;
+        }
+
+        @media (max-width: 1024px) {
+          .brand-name {
+            font-size: 1.15rem;
+          }
+          .brand-slogan {
+            font-size: 0.625rem;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .brand-logo {
+            gap: 0.6rem;
+          }
+          .brand-logo-img {
+            width: 44px;
+            height: 44px;
+          }
+          .brand-name {
+            font-size: 1.05rem;
+          }
+          .brand-tagline {
+            font-size: 0.55rem;
+          }
+          .brand-slogan {
+            font-size: 0.5625rem;
+            letter-spacing: 0;
+          }
+        }
+
+        @media (max-width: 360px) {
+          .brand-logo {
+            gap: 0.45rem;
+          }
+          .brand-logo-img {
+            width: 38px;
+            height: 38px;
+          }
+          .brand-name {
+            font-size: 0.9375rem;
+          }
+          .brand-tagline {
+            font-size: 0.5rem;
+          }
+          .brand-slogan {
+            font-size: 0.5rem;
+          }
         }
 
         /* ══════════════════════════════════════════════════════
@@ -472,12 +606,12 @@ export default function Header() {
         }
 
         /* ══════════════════════════════════════════════════════
-           4. PROMINENT "VIEW OUR CARS" BUTTON
+           4. "VIEW OUR CARS" ACTION BUTTON
            ══════════════════════════════════════════════════════ */
         .header-actions {
           display: flex;
           align-items: center;
-          gap: 1rem;
+          gap: 0.75rem;
           flex-shrink: 0;
         }
 
@@ -491,11 +625,12 @@ export default function Header() {
           font-weight: 700;
           letter-spacing: 0.02em;
           text-decoration: none;
-          padding: 0.75rem 1.35rem;
+          padding: 0.65rem 1.25rem;
           border-radius: 8px;
           box-shadow: 0 4px 14px rgba(29, 111, 235, 0.32);
           transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
           white-space: nowrap;
+          min-height: 42px;
         }
 
         @media (min-width: 768px) {
@@ -519,7 +654,7 @@ export default function Header() {
         }
 
         /* ══════════════════════════════════════════════════════
-           5. MOBILE HAMBURGER BUTTON
+           5. MOBILE & TABLET HAMBURGER BUTTON
            ══════════════════════════════════════════════════════ */
         .burger-btn {
           display: flex;
@@ -527,6 +662,7 @@ export default function Header() {
           justify-content: center;
           width: 44px;
           height: 44px;
+          min-width: 44px;
           background: #F8FAFC;
           border: 1px solid #E2E8F0;
           border-radius: 8px;
@@ -595,6 +731,19 @@ export default function Header() {
           border-radius: 50%;
           border: 2px solid #1D6FEB;
           object-fit: cover;
+          flex-shrink: 0;
+        }
+
+        .mobile-brand-text {
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+        }
+
+        .mobile-brand-title-wrap {
+          display: flex;
+          align-items: baseline;
+          gap: 0.35rem;
         }
 
         .mobile-brand-title {
@@ -610,6 +759,14 @@ export default function Header() {
           font-weight: 700;
           color: #64748B;
           letter-spacing: 0.1em;
+        }
+
+        .mobile-brand-slogan {
+          font-size: 0.65rem;
+          font-weight: 600;
+          color: #1D6FEB;
+          letter-spacing: 0.02em;
+          margin-top: 2px;
         }
 
         .mobile-nav-list {
@@ -710,30 +867,9 @@ export default function Header() {
           }
         }
 
-        /* ══════════════════════════════════════════════════════
-           7. RESPONSIVE SIZING ADJUSTMENTS
-           ══════════════════════════════════════════════════════ */
-        @media (max-width: 640px) {
-          .brand-logo-img {
-            width: 46px;
-            height: 46px;
-          }
-          .brand-name {
-            font-size: 1.05rem;
-          }
-          .brand-tagline {
-            font-size: 0.5rem;
-          }
+        @media (max-width: 360px) {
           .topbar-link {
-            font-size: 0.75rem;
-          }
-        }
-
-        @media (max-width: 420px) {
-          .topbar-link--email {
-            max-width: 170px;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 0.72rem;
           }
         }
       `}</style>

@@ -75,9 +75,30 @@
   --transition-slow: 400ms ease;
 
   /* Header height */
-  --header-top:  42px;
-  --header-main: 86px;
+  --header-top:  46px;
+  --header-main: 84px;
   --header-total: calc(var(--header-top) + var(--header-main));
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --header-top: 44px;
+    --header-main: 78px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --header-top: 54px;
+    --header-main: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --header-top: 50px;
+    --header-main: 64px;
+  }
 }
 
 /* ── Reset & Base ─────────────────────────────────────────── */
@@ -93,6 +114,8 @@ html {
   scroll-behavior: smooth;
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -100,7 +123,9 @@ body {
   color: var(--grey-800);
   background: var(--white);
   line-height: 1.6;
+  max-width: 100%;
   overflow-x: hidden;
+  position: relative;
 }
 
 img {
@@ -119,6 +144,7 @@ button {
   border: none;
   background: none;
   font-family: inherit;
+  touch-action: manipulation;
 }
 
 ul {
@@ -152,14 +178,28 @@ ul {
   padding: 0 var(--sp-xl);
 }
 
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 var(--sp-lg);
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 var(--sp-md);
   }
 }
 
-.section {
+@media (max-width: 360px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+}
+
+.section,
+section[id] {
   padding: var(--sp-4xl) 0;
+  scroll-margin-top: calc(var(--header-total, 138px) + 8px);
 }
 
 .section--dark {
@@ -227,7 +267,9 @@ ul {
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  min-height: 44px;
   padding: 0.75rem 1.75rem;
   border-radius: var(--radius-md);
   font-family: var(--font-body);
@@ -237,6 +279,7 @@ ul {
   cursor: pointer;
   border: 2px solid transparent;
   white-space: nowrap;
+  touch-action: manipulation;
 }
 
 .btn--primary {
@@ -287,6 +330,7 @@ ul {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
+  min-height: 38px;
   transition: gap var(--transition-fast);
 }
 
@@ -295,13 +339,15 @@ ul {
 }
 
 .btn--lg {
-  padding: 1rem 2.25rem;
+  padding: 0.875rem 2rem;
   font-size: 1rem;
+  min-height: 48px;
 }
 
 .btn--sm {
-  padding: 0.5rem 1.25rem;
+  padding: 0.45rem 1.15rem;
   font-size: 0.8125rem;
+  min-height: 38px;
 }
 
 /* ── Card Base ────────────────────────────────────────────── */
@@ -371,6 +417,24 @@ ul {
   flex-direction: column;
   gap: 0.75rem;
   z-index: 900;
+}
+
+@media (max-width: 640px) {
+  .floating-buttons {
+    bottom: 1rem;
+    right: 1rem;
+    gap: 0.5rem;
+  }
+  .float-btn {
+    width: 46px;
+    height: 46px;
+  }
+  .back-to-top {
+    bottom: 5.5rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .float-btn {

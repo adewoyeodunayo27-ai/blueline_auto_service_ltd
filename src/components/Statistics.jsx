@@ -123,6 +123,21 @@ export default function Statistics() {
 
         @media (max-width: 480px) {
           .stats-grid { grid-template-columns: 1fr 1fr; }
+          .stat-item {
+            padding: 1.5rem 0.5rem;
+          }
+          .stat-icon {
+            width: 44px;
+            height: 44px;
+            margin-bottom: var(--sp-sm);
+          }
+          .stat-value {
+            font-size: 1.75rem;
+          }
+          .stat-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+          }
         }
 
         .stat-item {

@@ -70,22 +70,22 @@ export default function QuoteForm() {
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    // Structured quote review message for WhatsApp
+    // Structured quote review message for WhatsApp (clean ASCII to prevent encoding corruption)
     const lines = [
       `*NEW VEHICLE QUOTE REQUEST*`,
       `*Blueline Auto Services Ltd*`,
-      `────────────────────────────`,
-      `🔧 *Service:* ${values.service}`,
-      `🚗 *Vehicle:* ${values.vehicleMake} ${values.vehicleModel}`,
-      values.registration.trim() ? `🔢 *Registration:* ${values.registration.trim().toUpperCase()}` : null,
-      values.preferredDate ? `📅 *Preferred Date:* ${values.preferredDate}` : null,
-      `────────────────────────────`,
-      `👤 *Name:* ${values.fullName.trim()}`,
-      `📧 *Email:* ${values.email.trim()}`,
-      `📞 *Phone:* ${values.phone.trim()}`,
-      values.message.trim() ? `📝 *Notes:*\n${values.message.trim()}` : null,
-      `────────────────────────────`,
-      `📍 _Sent from Blueline Auto Services website_`
+      `--------------------------------`,
+      `*Service:* ${values.service}`,
+      `*Vehicle:* ${values.vehicleMake} ${values.vehicleModel}`,
+      values.registration.trim() ? `*Registration:* ${values.registration.trim().toUpperCase()}` : null,
+      values.preferredDate ? `*Preferred Date:* ${values.preferredDate}` : null,
+      `--------------------------------`,
+      `*Name:* ${values.fullName.trim()}`,
+      `*Email:* ${values.email.trim()}`,
+      `*Phone:* ${values.phone.trim()}`,
+      values.message.trim() ? `*Notes:*\n${values.message.trim()}` : null,
+      `--------------------------------`,
+      `_Sent from Blueline Auto Services website_`
     ].filter(Boolean).join('\n');
 
     const url = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(lines)}`;
@@ -377,6 +377,17 @@ const quoteStyles = `
     border-radius: var(--radius-xl);
     padding: var(--sp-xl);
     box-shadow: var(--shadow-md);
+  }
+
+  @media (max-width: 640px) {
+    .quote-form-card {
+      padding: 1.25rem 1rem;
+      border-radius: var(--radius-lg);
+    }
+    .quote-info {
+      padding: 1.25rem 1rem;
+      border-radius: var(--radius-lg);
+    }
   }
 
   .optional-tag {

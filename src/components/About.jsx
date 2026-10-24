@@ -128,7 +128,7 @@ export default function About() {
 
         .about-main-img {
           width: 100%;
-          height: 480px;
+          height: clamp(260px, 45vw, 480px);
           object-fit: cover;
           border-radius: var(--radius-xl);
           box-shadow: var(--shadow-xl);
@@ -136,38 +136,33 @@ export default function About() {
 
         .about-secondary-img {
           position: absolute;
-          width: 200px;
-          height: 145px;
+          width: clamp(140px, 25vw, 200px);
+          height: clamp(100px, 18vw, 145px);
           object-fit: cover;
-          bottom: -1.5rem;
-          right: -1.5rem;
+          bottom: 1rem;
+          right: 1rem;
           border-radius: var(--radius-lg);
           border: 4px solid var(--white);
           box-shadow: var(--shadow-lg);
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 540px) {
           .about-secondary-img { display: none; }
-          .about-main-img { height: 300px; }
         }
 
         .about-badge {
           position: absolute;
-          top: var(--sp-lg);
-          left: -1rem;
+          top: 1rem;
+          left: 1rem;
           background: var(--accent);
           color: white;
-          padding: var(--sp-md) var(--sp-lg);
+          padding: 0.65rem 1.15rem;
           border-radius: var(--radius-md);
           box-shadow: var(--shadow-blue);
           display: flex;
           flex-direction: column;
           align-items: center;
           line-height: 1.2;
-        }
-
-        @media (max-width: 480px) {
-          .about-badge { left: var(--sp-md); }
         }
 
         .about-badge-number {
@@ -204,7 +199,7 @@ export default function About() {
           gap: var(--sp-sm);
         }
 
-        @media (max-width: 500px) {
+        @media (max-width: 540px) {
           .about-highlights { grid-template-columns: 1fr; }
         }
 
@@ -227,6 +222,17 @@ export default function About() {
           flex-wrap: wrap;
           gap: var(--sp-md);
           margin-top: var(--sp-xl);
+        }
+
+        @media (max-width: 540px) {
+          .about-actions {
+            flex-direction: column;
+            width: 100%;
+          }
+          .about-actions .btn {
+            width: 100%;
+            justify-content: center;
+          }
         }
       `}</style>
     </section>
