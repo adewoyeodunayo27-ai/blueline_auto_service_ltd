@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BUSINESS } from '../data/business.js';
+import { WhatsAppIcon } from './SocialIcons.jsx';
 import { X, Calendar, MapPin, User, Mail, Phone, AlertCircle, CheckCircle, Info } from 'lucide-react';
 
 const VEHICLE_CATEGORIES = ['Car', 'SUV', 'Small Van', 'Large Van', 'Other'];
@@ -38,6 +39,8 @@ function validate(v) {
 
 export default function BookingEnquiry({ isOpen, onClose }) {
   const [values,  setValues]  = useState(INITIAL);
+  const [reviewMessage, setReviewMessage] = useState('');
+  const [waUrl, setWaUrl] = useState('');
   const [errors,  setErrors]  = useState({});
   const [touched, setTouched] = useState({});
   const [status,  setStatus]  = useState('idle');
@@ -61,7 +64,7 @@ export default function BookingEnquiry({ isOpen, onClose }) {
     setErrors(p => ({ ...p, [name]: errs[name] }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const allTouched = Object.keys(INITIAL).reduce((a,k) => ({...a,[k]:true}), {});
     setTouched(allTouched);
@@ -69,17 +72,33 @@ export default function BookingEnquiry({ isOpen, onClose }) {
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    setStatus('loading');
-    // ── INTEGRATION POINT ──────────────────────────────────
-    // Replace this timeout with a real fetch to your API.
-    // This is a vehicle hire ENQUIRY, not a confirmed booking.
-    // ───────────────────────────────────────────────────────
-    try {
-      await new Promise(res => setTimeout(res, 2000));
-      setStatus('success');
-    } catch {
-      setStatus('error');
-    }
+    // Format hire enquiry for WhatsApp
+    const lines = [
+      `*VEHICLE HIRE ENQUIRY*`,
+      `*Blueline Auto Services Ltd*`,
+      `────────────────────────────`,
+      `🚗 *Category:* ${values.category}`,
+      `📅 *Collection Date:* ${values.collectionDate}`,
+      `📅 *Return Date:* ${values.returnDate}`,
+      `📍 *Collection Location:* ${values.collectionLocation}`,
+      `📍 *Return Location:* ${values.returnLocation}`,
+      `────────────────────────────`,
+      `👤 *Name:* ${values.name.trim()}`,
+      `📧 *Email:* ${values.email.trim()}`,
+      `📞 *Phone:* ${values.phone.trim()}`,
+      values.notes.trim() ? `📝 *Requirements:*\n${values.notes.trim()}` : null,
+      `────────────────────────────`,
+      `📍 _Sent from Blueline Auto Services website_`
+    ].filter(Boolean).join('\n');
+
+    const url = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(lines)}`;
+
+    setReviewMessage(lines);
+    setWaUrl(url);
+    setStatus('success');
+
+    // Immediately open WhatsApp chat
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const Err = ({ name }) =>
@@ -100,7 +119,7 @@ export default function BookingEnquiry({ isOpen, onClose }) {
         <div className="booking-header">
           <div>
             <h2 id="booking-title" className="booking-title">Vehicle Hire Enquiry</h2>
-            <p className="booking-subtitle">Submit your requirements and we'll be in touch shortly.</p>
+            <p className="booking-subtitle">Submit your requirements and we'll be in touch shortly via WhatsApp or call.</p>
           </div>
           <button className="booking-close" onClick={onClose} aria-label="Close vehicle hire enquiry form">
             <X size={20} />
@@ -109,16 +128,33 @@ export default function BookingEnquiry({ isOpen, onClose }) {
 
         {status === 'success' ? (
           <div className="booking-success">
-            <div className="success-icon"><CheckCircle size={40} /></div>
-            <h3>Enquiry Submitted</h3>
-            <p>
-              Thank you! Your vehicle hire enquiry has been received.
-              A member of our team will contact you to confirm availability and provide a quote.
-            </p>
-            <div className="booking-note">
-              <Info size={13} /> This is an enquiry only. Availability and pricing will be confirmed by our team.
+            <div className="success-icon success-icon--wa" style={{ background: '#e6f9ed', color: '#25D366', width: 64, height: 64, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
+              <WhatsAppIcon size={36} />
             </div>
-            <button className="btn btn--primary" onClick={() => { setStatus('idle'); setValues(INITIAL); onClose(); }}>
+            <h3 style={{ marginTop: '0.5rem', fontWeight: 800 }}>Enquiry Ready for WhatsApp</h3>
+            <p>
+              Your vehicle hire request was prepared and opened in WhatsApp. Review your message details below and click to chat with our team.
+            </p>
+
+            <div className="review-box" style={{ width: '100%', margin: '0.75rem 0', textAlign: 'left', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0.75rem', background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>
+                <span>Reviewed Hire Enquiry</span>
+                <span style={{ background: '#dcfce7', color: '#15803d', padding: '2px 6px', borderRadius: '999px', fontSize: '0.7rem' }}>WhatsApp Format</span>
+              </div>
+              <pre style={{ padding: '0.75rem', fontFamily: 'monospace', fontSize: '0.8rem', whiteSpace: 'pre-wrap', margin: 0, maxHeight: '200px', overflowY: 'auto' }}>{reviewMessage}</pre>
+            </div>
+
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn--wa"
+              style={{ width: '100%', justifyContent: 'center', marginBottom: '0.5rem' }}
+            >
+              <WhatsAppIcon size={18} /> Open WhatsApp Chat
+            </a>
+
+            <button className="btn btn--outline-blue" style={{ width: '100%', justifyContent: 'center' }} onClick={() => { setStatus('idle'); setValues(INITIAL); onClose(); }}>
               Close
             </button>
           </div>
@@ -241,8 +277,8 @@ export default function BookingEnquiry({ isOpen, onClose }) {
 
             <div className="booking-actions">
               <button type="button" className="btn btn--outline-blue" onClick={onClose}>Cancel</button>
-              <button type="submit" className="btn btn--primary" disabled={status === 'loading'}>
-                {status === 'loading' ? <><div className="spinner" aria-hidden="true" /> Submitting…</> : 'Submit Enquiry'}
+              <button type="submit" className="btn btn--wa">
+                <WhatsAppIcon size={16} /> Send Enquiry to WhatsApp
               </button>
             </div>
           </form>
@@ -336,17 +372,27 @@ export default function BookingEnquiry({ isOpen, onClose }) {
           line-height: 1.65;
           max-width: 480px;
         }
-        .form-error-banner {
-          display: flex;
-          align-items: flex-start;
+        .btn--wa {
+          display: inline-flex;
+          align-items: center;
           gap: 0.5rem;
-          background: #fef2f2;
-          border: 1px solid #fca5a5;
-          color: #b91c1c;
-          padding: var(--sp-md);
+          background: #25D366;
+          color: #ffffff;
+          border: 1px solid #20bd5a;
+          padding: 0.75rem 1.25rem;
           border-radius: var(--radius-md);
-          font-size: 0.875rem;
-          line-height: 1.5;
+          font-weight: 700;
+          font-size: 0.9375rem;
+          text-decoration: none;
+          box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+          transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+          cursor: pointer;
+        }
+        .btn--wa:hover {
+          background: #20bd5a;
+          color: #ffffff;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
         }
       `}</style>
     </div>

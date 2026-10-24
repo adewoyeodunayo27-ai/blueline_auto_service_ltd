@@ -1,19 +1,28 @@
 import { BUSINESS } from '../data/business.js';
-import { Phone, Mail, MapPin, Clock, Send, AlertCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Send, AlertCircle, CheckCircle } from 'lucide-react';
+import { WhatsAppIcon } from './SocialIcons.jsx';
 import { useState } from 'react';
 
 function ContactForm() {
-  const [values,  setValues]  = useState({ name: '', email: '', message: '' });
-  const [errors,  setErrors]  = useState({});
+  const [values, setValues] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    service: 'General Enquiry',
+    message: '',
+  });
+  const [reviewMessage, setReviewMessage] = useState('');
+  const [waUrl, setWaUrl] = useState('');
+  const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
-  const [status,  setStatus]  = useState('idle');
+  const [status, setStatus] = useState('idle');
 
   const validate = (v) => {
     const errs = {};
-    if (!v.name.trim())    errs.name    = 'Please enter your name.';
-    if (!v.email.trim())   errs.email   = 'Please enter your email.';
+    if (!v.name.trim()) errs.name = 'Please enter your name.';
+    if (!v.email.trim()) errs.email = 'Please enter your email.';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) errs.email = 'Please enter a valid email.';
-    if (!v.message.trim()) errs.message = 'Please enter a message.';
+    if (!v.message.trim()) errs.message = 'Please enter your message.';
     return errs;
   };
 
@@ -33,29 +42,79 @@ function ContactForm() {
     setErrors(p => ({ ...p, [name]: errs[name] }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const allTouched = { name: true, email: true, message: true };
+    const allTouched = { name: true, email: true, phone: true, message: true };
     setTouched(allTouched);
     const errs = validate(values);
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
-    setStatus('loading');
-    // Replace with real backend call
-    try {
-      await new Promise(res => setTimeout(res, 1800));
-      setStatus('success');
-    } catch { setStatus('error'); }
+
+    // Structured review message for WhatsApp
+    const lines = [
+      `*NEW CONTACT ENQUIRY*`,
+      `*Blueline Auto Services Ltd*`,
+      `────────────────────────────`,
+      `👤 *Name:* ${values.name.trim()}`,
+      `📧 *Email:* ${values.email.trim()}`,
+      values.phone.trim() ? `📞 *Phone:* ${values.phone.trim()}` : null,
+      `🔧 *Service:* ${values.service}`,
+      `────────────────────────────`,
+      `💬 *Message:*`,
+      `${values.message.trim()}`,
+      `────────────────────────────`,
+      `📍 _Sent from Blueline Auto Services website_`
+    ].filter(Boolean).join('\n');
+
+    const url = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(lines)}`;
+
+    setReviewMessage(lines);
+    setWaUrl(url);
+    setStatus('success');
+
+    // Immediately open WhatsApp chat
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   if (status === 'success') {
     return (
       <div className="contact-form-success">
-        <div className="cs-icon">✓</div>
-        <h3>Message Received</h3>
-        <p>Thank you for getting in touch. We'll reply as soon as possible.</p>
-        <button className="btn btn--outline-blue btn--sm" onClick={() => { setStatus('idle'); setValues({ name:'', email:'', message:'' }); setTouched({}); }}>
-          Send Another
+        <div className="cs-icon cs-icon--wa" aria-hidden="true">
+          <WhatsAppIcon size={30} />
+        </div>
+        <h3 className="success-heading">Message Ready for WhatsApp</h3>
+        <p className="success-desc">
+          Your enquiry has been prepared and opened in WhatsApp. You can review the exact message below and click again if WhatsApp didn’t open automatically.
+        </p>
+
+        <div className="review-box">
+          <div className="review-box-header">
+            <span>Reviewed Message</span>
+            <span className="review-box-badge">WhatsApp Format</span>
+          </div>
+          <pre className="review-box-content">{reviewMessage}</pre>
+        </div>
+
+        <a
+          href={waUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn--wa"
+        >
+          <WhatsAppIcon size={18} /> Open in WhatsApp
+        </a>
+
+        <button
+          type="button"
+          className="btn btn--outline-blue btn--sm"
+          style={{ width: '100%', justifyContent: 'center' }}
+          onClick={() => {
+            setStatus('idle');
+            setValues({ name: '', email: '', phone: '', service: 'General Enquiry', message: '' });
+            setTouched({});
+          }}
+        >
+          Send Another Message
         </button>
       </div>
     );
@@ -65,27 +124,102 @@ function ContactForm() {
     <form onSubmit={handleSubmit} noValidate aria-label="Contact form">
       <div className="form-group">
         <label htmlFor="c-name">Your Name *</label>
-        <input id="c-name" name="name" type="text" value={values.name} onChange={handleChange} onBlur={handleBlur}
-          className={errors.name && touched.name ? 'error' : ''} required />
-        {errors.name && touched.name && <p className="error-msg" role="alert"><AlertCircle size={12}/> {errors.name}</p>}
+        <input
+          id="c-name"
+          name="name"
+          type="text"
+          placeholder="e.g. John Smith"
+          value={values.name}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className={errors.name && touched.name ? 'error' : ''}
+          required
+        />
+        {errors.name && touched.name && (
+          <p className="error-msg" role="alert"><AlertCircle size={12}/> {errors.name}</p>
+        )}
       </div>
+
       <div className="form-group">
         <label htmlFor="c-email">Email Address *</label>
-        <input id="c-email" name="email" type="email" value={values.email} onChange={handleChange} onBlur={handleBlur}
-          className={errors.email && touched.email ? 'error' : ''} required />
-        {errors.email && touched.email && <p className="error-msg" role="alert"><AlertCircle size={12}/> {errors.email}</p>}
+        <input
+          id="c-email"
+          name="email"
+          type="email"
+          placeholder="e.g. john@example.co.uk"
+          value={values.email}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className={errors.email && touched.email ? 'error' : ''}
+          required
+        />
+        {errors.email && touched.email && (
+          <p className="error-msg" role="alert"><AlertCircle size={12}/> {errors.email}</p>
+        )}
       </div>
+
+      <div className="form-group">
+        <label htmlFor="c-phone">Phone Number <span className="optional-tag">(optional)</span></label>
+        <input
+          id="c-phone"
+          name="phone"
+          type="tel"
+          placeholder="e.g. +44 7123 456789"
+          value={values.phone}
+          onChange={handleChange}
+          onBlur={handleBlur}
+        />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="c-service">Service Needed</label>
+        <select
+          id="c-service"
+          name="service"
+          value={values.service}
+          onChange={handleChange}
+        >
+          <option value="General Enquiry">General Enquiry</option>
+          <option value="Vehicle Sales">Vehicle Sales</option>
+          <option value="Vehicle Hire / Rental">Vehicle Hire / Rental</option>
+          <option value="Servicing & MOT Prep">Servicing & MOT Prep</option>
+          <option value="Vehicle Repairs & Diagnostics">Vehicle Repairs & Diagnostics</option>
+          <option value="24/7 Breakdown Recovery">24/7 Breakdown Recovery</option>
+          <option value="Valeting & Detailing">Valeting & Detailing</option>
+          <option value="Vehicle Sourcing">Vehicle Sourcing</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
       <div className="form-group">
         <label htmlFor="c-message">Message *</label>
-        <textarea id="c-message" name="message" rows={5} value={values.message} onChange={handleChange} onBlur={handleBlur}
+        <textarea
+          id="c-message"
+          name="message"
+          rows={4}
+          value={values.message}
+          onChange={handleChange}
+          onBlur={handleBlur}
           className={errors.message && touched.message ? 'error' : ''}
-          placeholder="How can we help?" required />
-        {errors.message && touched.message && <p className="error-msg" role="alert"><AlertCircle size={12}/> {errors.message}</p>}
+          placeholder="Describe what you need assistance with..."
+          required
+        />
+        {errors.message && touched.message && (
+          <p className="error-msg" role="alert"><AlertCircle size={12}/> {errors.message}</p>
+        )}
       </div>
-      <button type="submit" className="btn btn--primary" style={{ width: '100%', justifyContent: 'center' }}
-        disabled={status === 'loading'} aria-busy={status === 'loading'}>
-        {status === 'loading' ? <><div className="spinner"/> Sending…</> : <><Send size={16}/> Send Message</>}
+
+      <button
+        type="submit"
+        className="btn btn--wa"
+        style={{ width: '100%', justifyContent: 'center' }}
+      >
+        <WhatsAppIcon size={18} /> Send to WhatsApp
       </button>
+
+      <p className="form-note">
+        Submitting opens WhatsApp directly with your message pre-filled for quick reply from our team.
+      </p>
     </form>
   );
 }
@@ -316,14 +450,12 @@ export default function Contact() {
           align-items: center;
           text-align: center;
           gap: var(--sp-md);
-          padding: var(--sp-xl) 0;
+          padding: var(--sp-md) 0;
         }
 
         .cs-icon {
-          width: 56px;
-          height: 56px;
-          background: var(--blue-50);
-          color: var(--accent);
+          width: 60px;
+          height: 60px;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -332,14 +464,103 @@ export default function Contact() {
           font-weight: 700;
         }
 
-        .contact-form-success h3 {
-          font-family: var(--font-display);
-          font-weight: 700;
+        .cs-icon--wa {
+          background: #e6f9ed;
+          color: #25D366;
+          box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);
         }
 
-        .contact-form-success p {
+        .success-heading {
+          font-family: var(--font-display);
+          font-weight: 800;
+          font-size: 1.25rem;
+          color: var(--dark);
+          margin-top: 0.25rem;
+        }
+
+        .success-desc {
           color: var(--grey-600);
-          font-size: 0.9rem;
+          font-size: 0.875rem;
+          line-height: 1.5;
+          max-width: 440px;
+        }
+
+        .review-box {
+          width: 100%;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: var(--radius-lg);
+          overflow: hidden;
+          text-align: left;
+          margin: var(--sp-xs) 0;
+        }
+
+        .review-box-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.625rem 1rem;
+          background: #f1f5f9;
+          border-bottom: 1px solid #e2e8f0;
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: var(--grey-700);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .review-box-badge {
+          background: #dcfce7;
+          color: #15803d;
+          font-size: 0.6875rem;
+          font-weight: 700;
+          padding: 0.2rem 0.5rem;
+          border-radius: var(--radius-full);
+        }
+
+        .review-box-content {
+          padding: 1rem;
+          font-family: monospace, sans-serif;
+          font-size: 0.8125rem;
+          line-height: 1.6;
+          color: #1e293b;
+          white-space: pre-wrap;
+          word-break: break-word;
+          margin: 0;
+          max-height: 240px;
+          overflow-y: auto;
+        }
+
+        .btn--wa {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: #25D366;
+          color: #ffffff;
+          border: 1px solid #20bd5a;
+          padding: 0.875rem 1.5rem;
+          border-radius: var(--radius-md);
+          font-weight: 700;
+          font-size: 0.9375rem;
+          text-decoration: none;
+          box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+          transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+          cursor: pointer;
+        }
+
+        .btn--wa:hover {
+          background: #20bd5a;
+          color: #ffffff;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+        }
+
+        .form-note {
+          font-size: 0.75rem;
+          color: var(--grey-500);
+          text-align: center;
+          margin-top: 0.625rem;
+          line-height: 1.4;
         }
 
         /* Map */

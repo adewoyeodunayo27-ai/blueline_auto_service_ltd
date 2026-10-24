@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { SERVICES } from '../data/services.js';
+import { BUSINESS } from '../data/business.js';
+import { WhatsAppIcon } from './SocialIcons.jsx';
 import { CheckCircle, AlertCircle, Loader2, Send, Info } from 'lucide-react';
 
 const INITIAL_STATE = {
@@ -38,6 +40,8 @@ function validate(values) {
 
 export default function QuoteForm() {
   const [values,  setValues]  = useState(INITIAL_STATE);
+  const [reviewMessage, setReviewMessage] = useState('');
+  const [waUrl, setWaUrl] = useState('');
   const [errors,  setErrors]  = useState({});
   const [status,  setStatus]  = useState('idle'); // idle | loading | success | error
   const [touched, setTouched] = useState({});
@@ -58,7 +62,7 @@ export default function QuoteForm() {
     setErrors(prev => ({ ...prev, [name]: errs[name] }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const allTouched = Object.keys(INITIAL_STATE).reduce((a, k) => ({ ...a, [k]: true }), {});
     setTouched(allTouched);
@@ -66,34 +70,32 @@ export default function QuoteForm() {
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    setStatus('loading');
+    // Structured quote review message for WhatsApp
+    const lines = [
+      `*NEW VEHICLE QUOTE REQUEST*`,
+      `*Blueline Auto Services Ltd*`,
+      `────────────────────────────`,
+      `🔧 *Service:* ${values.service}`,
+      `🚗 *Vehicle:* ${values.vehicleMake} ${values.vehicleModel}`,
+      values.registration.trim() ? `🔢 *Registration:* ${values.registration.trim().toUpperCase()}` : null,
+      values.preferredDate ? `📅 *Preferred Date:* ${values.preferredDate}` : null,
+      `────────────────────────────`,
+      `👤 *Name:* ${values.fullName.trim()}`,
+      `📧 *Email:* ${values.email.trim()}`,
+      `📞 *Phone:* ${values.phone.trim()}`,
+      values.message.trim() ? `📝 *Notes:*\n${values.message.trim()}` : null,
+      `────────────────────────────`,
+      `📍 _Sent from Blueline Auto Services website_`
+    ].filter(Boolean).join('\n');
 
-    // ── INTEGRATION POINT ─────────────────────────────────────
-    // To connect a real backend, replace the setTimeout below with
-    // a fetch/axios call to your API endpoint or form service.
-    // Example using Formspree:
-    //   const res = await fetch('https://formspree.io/f/YOUR_ID', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(values),
-    //   });
-    //   if (!res.ok) throw new Error('Submission failed');
-    //
-    // Keep API keys and secrets server-side — never expose them in client code.
-    // ─────────────────────────────────────────────────────────
+    const url = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(lines)}`;
 
-    try {
-      await new Promise((resolve) => {
-        // Simulated network call — replace with real fetch (see comment above)
-        // For demo purposes this always resolves successfully.
-        setTimeout(() => resolve(undefined), 2000);
-      });
-      setStatus('success');
-      setValues(INITIAL_STATE);
-      setTouched({});
-    } catch {
-      setStatus('error');
-    }
+    setReviewMessage(lines);
+    setWaUrl(url);
+    setStatus('success');
+
+    // Immediately open WhatsApp chat
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const Field = ({ name, label, type = 'text', required, children, optional }) => (
@@ -128,11 +130,38 @@ export default function QuoteForm() {
       <section id="quote" className="section quote-section" aria-labelledby="quote-title">
         <div className="container">
           <div className="quote-success">
-            <div className="success-icon"><CheckCircle size={48} /></div>
-            <h2 className="section__title">Enquiry Received</h2>
-            <p>Thank you for your enquiry. A member of our team will be in touch with you shortly.</p>
-            <button className="btn btn--primary" onClick={() => setStatus('idle')}>
-              Submit Another Enquiry
+            <div className="success-icon success-icon--wa"><WhatsAppIcon size={40} /></div>
+            <h2 className="section__title" style={{ fontSize: '1.75rem' }}>Quote Request Ready for WhatsApp</h2>
+            <p>Your quote enquiry has been prepared and opened in WhatsApp. Review the formatted details below and click to re-open if needed.</p>
+
+            <div className="review-box" style={{ width: '100%', margin: '1rem 0', textAlign: 'left' }}>
+              <div className="review-box-header">
+                <span>Reviewed Quote Message</span>
+                <span className="review-box-badge">WhatsApp Format</span>
+              </div>
+              <pre className="review-box-content">{reviewMessage}</pre>
+            </div>
+
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn--wa"
+              style={{ width: '100%', justifyContent: 'center' }}
+            >
+              <WhatsAppIcon size={18} /> Open in WhatsApp
+            </a>
+
+            <button
+              className="btn btn--outline-blue"
+              style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem' }}
+              onClick={() => {
+                setStatus('idle');
+                setValues(INITIAL_STATE);
+                setTouched({});
+              }}
+            >
+              Submit Another Quote Enquiry
             </button>
           </div>
         </div>
@@ -267,15 +296,9 @@ export default function QuoteForm() {
 
             <button
               type="submit"
-              className="btn btn--primary btn--lg submit-btn"
-              disabled={status === 'loading'}
-              aria-busy={status === 'loading'}
+              className="btn btn--wa btn--lg submit-btn"
             >
-              {status === 'loading' ? (
-                <><div className="spinner" aria-hidden="true" /> Submitting…</>
-              ) : (
-                <><Send size={16} /> Submit Enquiry</>
-              )}
+              <WhatsAppIcon size={18} /> Send Quote Request to WhatsApp
             </button>
           </form>
         </div>
@@ -410,8 +433,85 @@ const quoteStyles = `
     color: var(--accent);
   }
 
+  .success-icon--wa {
+    background: #e6f9ed;
+    color: #25D366;
+    box-shadow: 0 4px 16px rgba(37, 211, 102, 0.25);
+  }
+
   .quote-success p {
     color: var(--grey-600);
     line-height: 1.65;
+  }
+
+  .btn--wa {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #25D366;
+    color: #ffffff;
+    border: 1px solid #20bd5a;
+    padding: 0.875rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+    cursor: pointer;
+  }
+
+  .btn--wa:hover {
+    background: #20bd5a;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+  }
+
+  .review-box {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    text-align: left;
+    margin: var(--sp-xs) 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .review-box-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.625rem 1rem;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--grey-700);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .review-box-badge {
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-full);
+  }
+
+  .review-box-content {
+    padding: 1rem;
+    font-family: monospace, sans-serif;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: #1e293b;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    max-height: 240px;
+    overflow-y: auto;
   }
 `;
