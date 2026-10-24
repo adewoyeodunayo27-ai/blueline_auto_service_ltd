@@ -1,16 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { BUSINESS } from '../data/business.js';
-import { Phone, Mail, MapPin, Clock, Menu, X } from 'lucide-react';
-import { FacebookIcon, InstagramIcon, TwitterIcon, LinkedinIcon } from './SocialIcons.jsx';
+import { Phone, Mail, Clock, Menu, X, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '#home' },
   { label: 'About Us', href: '#about' },
+  { label: 'Our Cars', href: '#fleet' },
   { label: 'Services', href: '#services' },
-  { label: 'Price List', href: '#prices' },
-  { label: 'Our Fleet', href: '#fleet' },
-  { label: 'Gallery', href: '#gallery' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Contact Us', href: '#contact' },
 ];
 
 export default function Header() {
@@ -18,7 +15,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60);
+    const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -31,10 +28,11 @@ export default function Header() {
     const target = document.querySelector(href);
     if (target) {
       const headerTotal = parseInt(
-        getComputedStyle(document.documentElement).getPropertyValue('--header-total') || '112'
+        getComputedStyle(document.documentElement).getPropertyValue('--header-total') || '128'
       );
+      const targetPos = target.getBoundingClientRect().top + window.pageYOffset - (headerTotal - 10);
       window.scrollTo({
-        top: target.offsetTop - headerTotal + 16,
+        top: Math.max(0, targetPos),
         behavior: 'smooth',
       });
     }
@@ -49,93 +47,78 @@ export default function Header() {
 
   return (
     <>
-      {/* ── Top Bar ── */}
-      <div className="header-topbar">
-        <div className="container">
+      {/* ── Top Contact Bar ── */}
+      <div className="header-topbar" role="region" aria-label="Contact Information Bar">
+        <div className="container topbar-container">
           <div className="topbar-inner">
-            <div className="topbar-left">
-              <a href={`tel:${BUSINESS.phone}`} className="topbar-item">
-                <Phone size={13} /> {BUSINESS.phoneDisplay}
+            {/* Clickable Phone and Email */}
+            <div className="topbar-contacts">
+              <a
+                href={`tel:${BUSINESS.phone}`}
+                className="topbar-link topbar-link--phone"
+                aria-label={`Call us at ${BUSINESS.phoneDisplay}`}
+              >
+                <Phone size={13} className="topbar-icon" aria-hidden="true" />
+                <span className="topbar-text">{BUSINESS.phoneDisplay}</span>
               </a>
-              <a href={`mailto:${BUSINESS.email}`} className="topbar-item">
-                <Mail size={13} /> {BUSINESS.email}
+
+              <span className="topbar-sep" aria-hidden="true">|</span>
+
+              <a
+                href={`mailto:${BUSINESS.email}`}
+                className="topbar-link topbar-link--email"
+                aria-label={`Email us at ${BUSINESS.email}`}
+              >
+                <Mail size={13} className="topbar-icon" aria-hidden="true" />
+                <span className="topbar-text">{BUSINESS.email}</span>
               </a>
-              <span className="topbar-item topbar-item--location">
-                <MapPin size={13} /> {BUSINESS.addressLine2}, {BUSINESS.country}
-              </span>
-              <span className="topbar-item topbar-item--hours">
-                <Clock size={13} /> Mon–Fri 08:00–18:00 · Sat 09:00–16:00
-              </span>
             </div>
-            <div className="topbar-right">
-              <a
-                href={BUSINESS.social.facebook}
-                aria-label="Facebook"
-                className="topbar-social"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FacebookIcon size={14} />
-              </a>
-              <a
-                href={BUSINESS.social.instagram}
-                aria-label="Instagram"
-                className="topbar-social"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <InstagramIcon size={14} />
-              </a>
-              <a
-                href={BUSINESS.social.twitter}
-                aria-label="Twitter"
-                className="topbar-social"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <TwitterIcon size={14} />
-              </a>
-              <a
-                href={BUSINESS.social.linkedin}
-                aria-label="LinkedIn"
-                className="topbar-social"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <LinkedinIcon size={14} />
-              </a>
+
+            {/* Business Status & Hours (Tablet/Desktop) */}
+            <div className="topbar-meta">
+              <span className="topbar-badge">
+                <span className="badge-pulse-dot" aria-hidden="true" />
+                <span>24/7 Breakdown Recovery</span>
+              </span>
+              <span className="topbar-hours">
+                <Clock size={12} aria-hidden="true" />
+                <span>Mon–Fri 08:30–18:00</span>
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* ── Main Site Header ── */}
-      <header className={`site-header${scrolled ? ' scrolled' : ''}`} role="banner">
-        <div className="container">
+      {/* ── Main Site Navigation Header ── */}
+      <header
+        className={`site-header${scrolled ? ' scrolled' : ''}`}
+        role="banner"
+      >
+        <div className="container header-container">
           <div className="header-inner">
-            {/* Logo */}
+            {/* Logo & Company Name */}
             <a
               href="#home"
-              className="logo"
+              className="brand-logo"
               onClick={(e) => handleNavClick(e, '#home')}
-              aria-label="Blueline Auto Services Ltd — Home"
+              aria-label="Blueline Auto Services Ltd — Return to Home"
             >
               <img
                 src="/logo.png"
-                alt="Blueline Auto Services Ltd Logo"
-                className="logo-img"
+                alt="Blueline Auto Services Ltd Official Logo"
+                className="brand-logo-img"
               />
-              <div className="logo-text">
-                <span className="logo-name">BLUELINE</span>
-                <span className="logo-sub">AUTO SERVICES LTD</span>
+              <div className="brand-logo-text">
+                <span className="brand-name">BLUELINE</span>
+                <span className="brand-tagline">AUTO SERVICES LTD</span>
               </div>
             </a>
 
-            {/* Desktop Navigation */}
-            <nav className="desktop-nav" aria-label="Main navigation">
+            {/* Desktop Navigation Links */}
+            <nav className="desktop-nav" aria-label="Main Navigation">
               <ul className="nav-list" role="list">
                 {NAV_ITEMS.map((item) => (
-                  <li key={item.href}>
+                  <li key={item.href} className="nav-item">
                     <a
                       href={item.href}
                       className="nav-link"
@@ -148,23 +131,27 @@ export default function Header() {
               </ul>
             </nav>
 
-            {/* Actions */}
+            {/* Desktop Action & Mobile Menu Toggle */}
             <div className="header-actions">
               <a
-                href="#quote"
-                className="btn btn--primary btn--sm"
-                onClick={(e) => handleNavClick(e, '#quote')}
+                href="#fleet"
+                className="btn-view-cars"
+                onClick={(e) => handleNavClick(e, '#fleet')}
+                aria-label="View our cars available for sale and hire"
               >
-                Get a Quote
+                <span>View Our Cars</span>
+                <ArrowRight size={15} aria-hidden="true" className="btn-arrow" />
               </a>
+
               <button
-                className="burger"
+                type="button"
+                className={`burger-btn${mobileOpen ? ' is-active' : ''}`}
                 aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-nav"
-                onClick={() => setMobileOpen((v) => !v)}
+                onClick={() => setMobileOpen((prev) => !prev)}
               >
-                {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+                {mobileOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
@@ -178,316 +165,576 @@ export default function Header() {
         aria-hidden={!mobileOpen}
         role="dialog"
         aria-modal="true"
-        aria-label="Navigation menu"
+        aria-label="Mobile Navigation Menu"
       >
-        <div className="mobile-nav-header">
-          <img src="/logo.png" alt="Blueline Auto Services Ltd Logo" className="mobile-logo-img" />
-          <div className="mobile-logo-text">
-            <span className="mobile-logo-name">BLUELINE</span>
-            <span className="mobile-logo-sub">AUTO SERVICES LTD</span>
+        <div className="mobile-nav-inner">
+          {/* Mobile Header Brand Display */}
+          <div className="mobile-brand-bar">
+            <img src="/logo.png" alt="Blueline Auto Services Ltd Logo" className="mobile-logo-thumb" />
+            <div>
+              <div className="mobile-brand-title">BLUELINE</div>
+              <div className="mobile-brand-sub">AUTO SERVICES LTD</div>
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="mobile-nav-menu" aria-label="Mobile Links">
+            <ul className="mobile-nav-list" role="list">
+              {NAV_ITEMS.map((item) => (
+                <li key={item.href}>
+                  <a
+                    href={item.href}
+                    className="mobile-nav-link"
+                    onClick={(e) => handleNavClick(e, item.href)}
+                  >
+                    <span>{item.label}</span>
+                    <ArrowRight size={16} className="mobile-link-arrow" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          {/* Prominent "View Our Cars" Button */}
+          <div className="mobile-cta-box">
+            <a
+              href="#fleet"
+              className="btn-view-cars btn-view-cars--mobile"
+              onClick={(e) => handleNavClick(e, '#fleet')}
+            >
+              <span>View Our Cars</span>
+              <ArrowRight size={16} aria-hidden="true" />
+            </a>
+          </div>
+
+          {/* Mobile Direct Contact Quick Bar */}
+          <div className="mobile-contact-bar">
+            <a href={`tel:${BUSINESS.phone}`} className="mobile-contact-btn">
+              <Phone size={14} />
+              <span>{BUSINESS.phoneDisplay}</span>
+            </a>
+            <a href={`mailto:${BUSINESS.email}`} className="mobile-contact-btn">
+              <Mail size={14} />
+              <span>{BUSINESS.email}</span>
+            </a>
           </div>
         </div>
-        <nav>
-          <ul>
-            {NAV_ITEMS.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  className="mobile-nav-link"
-                  onClick={(e) => handleNavClick(e, item.href)}
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-            <li>
-              <a
-                href="#quote"
-                className="btn btn--primary mobile-nav-cta"
-                onClick={(e) => handleNavClick(e, '#quote')}
-              >
-                Get a Quote
-              </a>
-            </li>
-          </ul>
-        </nav>
       </div>
 
+      {/* Backdrop Overlay */}
       {mobileOpen && (
-        <div className="mobile-nav-backdrop" aria-hidden="true" onClick={closeMobile} />
+        <div
+          className="mobile-nav-backdrop"
+          aria-hidden="true"
+          onClick={closeMobile}
+        />
       )}
 
+      {/* ── Component Styles ── */}
       <style>{`
-        /* ── Top bar ── */
+        /* ══════════════════════════════════════════════════════
+           1. TOP CONTACT BAR
+           ══════════════════════════════════════════════════════ */
         .header-topbar {
-          background: var(--navy);
-          height: var(--header-top);
-          display: flex;
-          align-items: center;
+          background: #0B1528;
+          height: var(--header-top, 42px);
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           z-index: 1000;
-          font-size: 0.75rem;
-          color: var(--grey-400);
+          display: flex;
+          align-items: center;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          font-family: var(--font-body, 'Inter', sans-serif);
         }
+
+        .topbar-container {
+          width: 100%;
+        }
+
         .topbar-inner {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: var(--sp-md);
-          height: 100%;
-        }
-        .topbar-left {
-          display: flex;
-          align-items: center;
-          gap: var(--sp-md);
-          overflow: hidden;
-        }
-        .topbar-item {
-          display: flex;
-          align-items: center;
-          gap: 0.3rem;
-          color: var(--grey-400);
-          transition: color var(--transition-fast);
-          white-space: nowrap;
-        }
-        .topbar-item:hover { color: var(--white); }
-        .topbar-item--location,
-        .topbar-item--hours { display: none; }
-        @media (min-width: 900px) {
-          .topbar-item--location { display: flex; }
-        }
-        @media (min-width: 1100px) {
-          .topbar-item--hours { display: flex; }
-        }
-        .topbar-right {
-          display: flex;
-          align-items: center;
-          gap: var(--sp-sm);
-          flex-shrink: 0;
-        }
-        .topbar-social {
-          color: var(--grey-500);
-          transition: color var(--transition-fast);
-          display: flex;
-          align-items: center;
-          padding: 4px;
-        }
-        .topbar-social:hover { color: var(--white); }
-
-        /* ── Main header ── */
-        .site-header {
-          position: fixed;
-          top: var(--header-top);
-          left: 0;
-          right: 0;
-          height: var(--header-main);
-          background: rgba(255,255,255,.97);
-          border-bottom: 1px solid var(--grey-200);
-          backdrop-filter: blur(12px);
-          z-index: 999;
-          transition: box-shadow var(--transition), background var(--transition);
-        }
-        .site-header.scrolled {
-          box-shadow: var(--shadow-md);
-          background: rgba(255,255,255,.99);
-        }
-        .header-inner {
-          display: flex;
-          align-items: center;
-          height: 100%;
-          gap: var(--sp-2xl);
+          gap: 1rem;
         }
 
-        /* ── Logo ── */
-        .logo {
+        .topbar-contacts {
           display: flex;
           align-items: center;
           gap: 0.875rem;
-          flex-shrink: 0;
-          text-decoration: none;
+          white-space: nowrap;
         }
-        .logo-img {
+
+        .topbar-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.45rem;
+          color: #FFFFFF;
+          text-decoration: none;
+          font-size: 0.8125rem;
+          font-weight: 500;
+          letter-spacing: 0.01em;
+          transition: color 0.2s ease, opacity 0.2s ease;
+        }
+
+        .topbar-link:hover {
+          color: #60A5FA;
+        }
+
+        .topbar-icon {
+          color: #38BDF8;
+          flex-shrink: 0;
+        }
+
+        .topbar-sep {
+          color: rgba(255, 255, 255, 0.25);
+          font-size: 0.75rem;
+          user-select: none;
+        }
+
+        .topbar-meta {
+          display: none;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        @media (min-width: 900px) {
+          .topbar-meta {
+            display: flex;
+          }
+        }
+
+        .topbar-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #93C5FD;
+          background: rgba(29, 111, 235, 0.2);
+          border: 1px solid rgba(59, 130, 246, 0.3);
+          padding: 0.2rem 0.625rem;
+          border-radius: 999px;
+        }
+
+        .badge-pulse-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #38BDF8;
+          box-shadow: 0 0 8px #38BDF8;
+          animation: topbarDotPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes topbarDotPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .topbar-hours {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.75);
+        }
+
+        /* ══════════════════════════════════════════════════════
+           2. MAIN SITE HEADER (White Background, Automotive Style)
+           ══════════════════════════════════════════════════════ */
+        .site-header {
+          position: fixed;
+          top: var(--header-top, 42px);
+          left: 0;
+          right: 0;
+          height: var(--header-main, 86px);
+          background: #FFFFFF;
+          border-bottom: 1px solid #E2E8F0;
+          z-index: 999;
+          transition: box-shadow 0.25s ease, background 0.25s ease, height 0.25s ease;
+        }
+
+        .site-header.scrolled {
+          background: rgba(255, 255, 255, 0.98);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          box-shadow: 0 4px 20px rgba(11, 21, 40, 0.08);
+        }
+
+        .header-inner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 100%;
+          gap: 1.5rem;
+        }
+
+        /* ── Brand Logo & Text ── */
+        .brand-logo {
+          display: flex;
+          align-items: center;
+          gap: 0.875rem;
+          text-decoration: none;
+          flex-shrink: 0;
+          transition: transform 0.2s ease;
+        }
+
+        .brand-logo:hover .brand-logo-img {
+          transform: scale(1.05);
+          box-shadow: 0 4px 16px rgba(29, 111, 235, 0.3);
+        }
+
+        .brand-logo-img {
           width: 58px;
           height: 58px;
           border-radius: 50%;
           object-fit: cover;
           flex-shrink: 0;
-          box-shadow: 0 2px 10px rgba(13,27,62,.2);
-          border: 2px solid var(--accent);
-          transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+          border: 2px solid #1D6FEB;
+          box-shadow: 0 2px 10px rgba(11, 21, 40, 0.15);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .logo:hover .logo-img {
-          transform: scale(1.05);
-          box-shadow: 0 4px 14px rgba(29,111,235,.35);
-        }
-        .logo-text {
+
+        .brand-logo-text {
           display: flex;
           flex-direction: column;
           line-height: 1.1;
         }
-        .logo-name {
-          font-family: var(--font-display);
+
+        .brand-name {
+          font-family: var(--font-display, 'Outfit', sans-serif);
           font-size: 1.25rem;
           font-weight: 900;
-          color: var(--accent);
-          letter-spacing: 0.05em;
+          color: #0B1528;
+          letter-spacing: 0.04em;
+          transition: color 0.2s ease;
         }
-        .logo-sub {
+
+        .brand-logo:hover .brand-name {
+          color: #1D6FEB;
+        }
+
+        .brand-tagline {
+          font-family: var(--font-body, 'Inter', sans-serif);
           font-size: 0.6rem;
           font-weight: 700;
           letter-spacing: 0.12em;
-          color: var(--grey-600);
+          color: #475569;
           text-transform: uppercase;
         }
 
-        /* ── Desktop nav ── */
+        /* ══════════════════════════════════════════════════════
+           3. DESKTOP NAVIGATION
+           ══════════════════════════════════════════════════════ */
         .desktop-nav {
           margin-left: auto;
-          margin-right: var(--sp-md);
+          display: none;
         }
+
+        @media (min-width: 1025px) {
+          .desktop-nav {
+            display: block;
+          }
+        }
+
         .nav-list {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.35rem;
+          list-style: none;
+          margin: 0;
+          padding: 0;
         }
+
+        .nav-item {
+          display: flex;
+          align-items: center;
+        }
+
         .nav-link {
           display: block;
           padding: 0.625rem 1rem;
           font-size: 0.9375rem;
           font-weight: 600;
-          color: var(--grey-700);
-          border-radius: var(--radius-sm);
-          transition: color var(--transition-fast), background var(--transition-fast);
+          color: #0F172A;
+          text-decoration: none;
+          border-radius: 6px;
+          transition: color 0.2s ease, background-color 0.2s ease;
           white-space: nowrap;
-        }
-        .nav-link:hover {
-          color: var(--accent);
-          background: var(--blue-50);
-        }
-        @media (max-width: 1024px) {
-          .desktop-nav { display: none; }
+          position: relative;
         }
 
-        /* ── Header actions ── */
+        .nav-link:hover {
+          color: #1D6FEB;
+          background: #EFF6FF;
+        }
+
+        /* ══════════════════════════════════════════════════════
+           4. PROMINENT "VIEW OUR CARS" BUTTON
+           ══════════════════════════════════════════════════════ */
         .header-actions {
           display: flex;
           align-items: center;
-          gap: var(--sp-md);
-          margin-left: auto;
-        }
-        @media (min-width: 1025px) {
-          .header-actions { margin-left: 0; }
-        }
-        .burger {
-          display: none;
-          width: 40px;
-          height: 40px;
-          align-items: center;
-          justify-content: center;
-          border-radius: var(--radius-sm);
-          color: var(--grey-700);
-          transition: background var(--transition-fast), color var(--transition-fast);
-        }
-        .burger:hover {
-          background: var(--grey-100);
-          color: var(--accent);
-        }
-        @media (max-width: 1024px) {
-          .burger { display: flex; }
+          gap: 1rem;
+          flex-shrink: 0;
         }
 
-        /* ── Mobile nav ── */
+        .btn-view-cars {
+          display: none;
+          align-items: center;
+          gap: 0.5rem;
+          background: #1D6FEB;
+          color: #FFFFFF !important;
+          font-size: 0.9375rem;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          text-decoration: none;
+          padding: 0.75rem 1.35rem;
+          border-radius: 8px;
+          box-shadow: 0 4px 14px rgba(29, 111, 235, 0.32);
+          transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+          white-space: nowrap;
+        }
+
+        @media (min-width: 768px) {
+          .btn-view-cars {
+            display: inline-flex;
+          }
+        }
+
+        .btn-view-cars:hover {
+          background: #1557BF;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(29, 111, 235, 0.42);
+        }
+
+        .btn-arrow {
+          transition: transform 0.2s ease;
+        }
+
+        .btn-view-cars:hover .btn-arrow {
+          transform: translateX(3px);
+        }
+
+        /* ══════════════════════════════════════════════════════
+           5. MOBILE HAMBURGER BUTTON
+           ══════════════════════════════════════════════════════ */
+        .burger-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 44px;
+          height: 44px;
+          background: #F8FAFC;
+          border: 1px solid #E2E8F0;
+          border-radius: 8px;
+          color: #0B1528;
+          cursor: pointer;
+          transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        @media (min-width: 1025px) {
+          .burger-btn {
+            display: none;
+          }
+        }
+
+        .burger-btn:hover,
+        .burger-btn.is-active {
+          background: #EFF6FF;
+          color: #1D6FEB;
+          border-color: #BFDBFE;
+        }
+
+        /* ══════════════════════════════════════════════════════
+           6. MOBILE NAVIGATION DRAWER
+           ══════════════════════════════════════════════════════ */
         .mobile-nav {
           position: fixed;
-          top: var(--header-total);
+          top: var(--header-total, 128px);
           left: 0;
           right: 0;
-          background: var(--white);
+          background: #FFFFFF;
           z-index: 998;
-          padding: var(--sp-md);
-          box-shadow: var(--shadow-lg);
-          border-top: 1px solid var(--grey-200);
-          transform: translateY(-8px);
+          border-bottom: 2px solid #1D6FEB;
+          box-shadow: 0 12px 32px rgba(11, 21, 40, 0.16);
+          transform: translateY(-10px);
           opacity: 0;
           pointer-events: none;
-          transition: transform var(--transition), opacity var(--transition);
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+          max-height: calc(100vh - var(--header-total, 128px));
+          overflow-y: auto;
         }
+
         .mobile-nav.open {
           transform: translateY(0);
           opacity: 1;
           pointer-events: all;
         }
-        .mobile-nav-header {
+
+        .mobile-nav-inner {
+          padding: 1.25rem 1.25rem 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .mobile-brand-bar {
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          padding: 0.25rem var(--sp-sm) var(--sp-md);
-          border-bottom: 1px solid var(--grey-200);
-          margin-bottom: var(--sp-sm);
+          padding-bottom: 0.875rem;
+          border-bottom: 1px solid #F1F5F9;
         }
-        .mobile-logo-img {
+
+        .mobile-logo-thumb {
           width: 44px;
           height: 44px;
           border-radius: 50%;
+          border: 2px solid #1D6FEB;
           object-fit: cover;
-          border: 2px solid var(--accent);
-          flex-shrink: 0;
         }
-        .mobile-logo-text {
-          display: flex;
-          flex-direction: column;
+
+        .mobile-brand-title {
+          font-family: var(--font-display, 'Outfit', sans-serif);
+          font-size: 1.125rem;
+          font-weight: 900;
+          color: #0B1528;
           line-height: 1.1;
         }
-        .mobile-logo-name {
-          font-family: var(--font-display);
-          font-size: 1.1rem;
-          font-weight: 900;
-          color: var(--accent);
-          letter-spacing: 0.04em;
-        }
-        .mobile-logo-sub {
+
+        .mobile-brand-sub {
           font-size: 0.55rem;
           font-weight: 700;
+          color: #64748B;
           letter-spacing: 0.1em;
-          color: var(--grey-600);
-          text-transform: uppercase;
         }
-        .mobile-nav ul {
+
+        .mobile-nav-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
           display: flex;
           flex-direction: column;
-          gap: var(--sp-xs);
+          gap: 0.35rem;
         }
+
         .mobile-nav-link {
-          display: block;
-          padding: 0.875rem var(--sp-md);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.875rem 1rem;
           font-size: 1rem;
           font-weight: 600;
-          color: var(--grey-800);
-          border-radius: var(--radius-md);
-          transition: background var(--transition-fast), color var(--transition-fast);
+          color: #0F172A;
+          text-decoration: none;
+          border-radius: 8px;
+          transition: background-color 0.2s ease, color 0.2s ease;
         }
-        .mobile-nav-link:hover {
-          background: var(--blue-50);
-          color: var(--accent);
+
+        .mobile-nav-link:hover,
+        .mobile-nav-link:active {
+          background: #EFF6FF;
+          color: #1D6FEB;
         }
-        .mobile-nav-cta {
+
+        .mobile-link-arrow {
+          color: #94A3B8;
+          transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .mobile-nav-link:hover .mobile-link-arrow {
+          transform: translateX(3px);
+          color: #1D6FEB;
+        }
+
+        .mobile-cta-box {
+          margin-top: 0.5rem;
+        }
+
+        .btn-view-cars--mobile {
+          display: flex !important;
           width: 100%;
           justify-content: center;
-          margin-top: var(--sp-sm);
+          padding: 0.875rem 1rem;
+          font-size: 1rem;
         }
+
+        .mobile-contact-bar {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+          padding-top: 0.875rem;
+          border-top: 1px solid #F1F5F9;
+        }
+
+        .mobile-contact-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          background: #F8FAFC;
+          color: #0F172A;
+          border: 1px solid #E2E8F0;
+          padding: 0.625rem 0.75rem;
+          border-radius: 6px;
+          text-decoration: none;
+          font-size: 0.8125rem;
+          font-weight: 600;
+          transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .mobile-contact-btn:hover {
+          background: #EFF6FF;
+          color: #1D6FEB;
+          border-color: #BFDBFE;
+        }
+
         .mobile-nav-backdrop {
           position: fixed;
           inset: 0;
-          top: var(--header-total);
-          background: rgba(0,0,0,.3);
+          top: var(--header-total, 128px);
+          background: rgba(11, 21, 40, 0.45);
+          backdrop-filter: blur(2px);
+          -webkit-backdrop-filter: blur(2px);
           z-index: 997;
         }
+
         @media (min-width: 1025px) {
-          .mobile-nav { display: none; }
-          .mobile-nav-backdrop { display: none; }
+          .mobile-nav,
+          .mobile-nav-backdrop {
+            display: none !important;
+          }
+        }
+
+        /* ══════════════════════════════════════════════════════
+           7. RESPONSIVE SIZING ADJUSTMENTS
+           ══════════════════════════════════════════════════════ */
+        @media (max-width: 640px) {
+          .brand-logo-img {
+            width: 46px;
+            height: 46px;
+          }
+          .brand-name {
+            font-size: 1.05rem;
+          }
+          .brand-tagline {
+            font-size: 0.5rem;
+          }
+          .topbar-link {
+            font-size: 0.75rem;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .topbar-link--email {
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
         }
       `}</style>
     </>
