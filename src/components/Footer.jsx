@@ -208,13 +208,14 @@ export default function Footer() {
           margin-bottom: var(--sp-md);
         }
         .footer-logo-img {
-          width: 50px;
-          height: 50px;
+          width: 58px;
+          height: 58px;
           border-radius: 50%;
           object-fit: cover;
           display: block;
           flex-shrink: 0;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+          border: 2px solid var(--accent);
         }
         .footer-logo div {
           display: flex;

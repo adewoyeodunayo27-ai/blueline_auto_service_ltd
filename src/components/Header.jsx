@@ -120,22 +120,11 @@ export default function Header() {
               onClick={(e) => handleNavClick(e, '#home')}
               aria-label="Blueline Auto Services Ltd — Home"
             >
-              <div className="logo-icon">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 32 32"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                >
-                  <rect width="32" height="32" rx="8" fill="#1d6feb" />
-                  <path d="M6 21l4-8h12l4 8H6z" fill="white" opacity=".9" />
-                  <circle cx="11" cy="22" r="2.5" fill="white" />
-                  <circle cx="21" cy="22" r="2.5" fill="white" />
-                  <path d="M4 16h24" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity=".4" />
-                </svg>
-              </div>
+              <img
+                src="/logo.png"
+                alt="Blueline Auto Services Ltd Logo"
+                className="logo-img"
+              />
               <div className="logo-text">
                 <span className="logo-name">BLUELINE</span>
                 <span className="logo-sub">AUTO SERVICES LTD</span>
@@ -191,6 +180,13 @@ export default function Header() {
         aria-modal="true"
         aria-label="Navigation menu"
       >
+        <div className="mobile-nav-header">
+          <img src="/logo.png" alt="Blueline Auto Services Ltd Logo" className="mobile-logo-img" />
+          <div className="mobile-logo-text">
+            <span className="mobile-logo-name">BLUELINE</span>
+            <span className="mobile-logo-sub">AUTO SERVICES LTD</span>
+          </div>
+        </div>
         <nav>
           <ul>
             {NAV_ITEMS.map((item) => (
@@ -302,49 +298,65 @@ export default function Header() {
           display: flex;
           align-items: center;
           height: 100%;
-          gap: var(--sp-xl);
+          gap: var(--sp-2xl);
         }
 
         /* ── Logo ── */
         .logo {
           display: flex;
           align-items: center;
-          gap: 0.625rem;
+          gap: 0.875rem;
           flex-shrink: 0;
           text-decoration: none;
         }
-        .logo-icon { flex-shrink: 0; }
+        .logo-img {
+          width: 58px;
+          height: 58px;
+          border-radius: 50%;
+          object-fit: cover;
+          flex-shrink: 0;
+          box-shadow: 0 2px 10px rgba(13,27,62,.2);
+          border: 2px solid var(--accent);
+          transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+        }
+        .logo:hover .logo-img {
+          transform: scale(1.05);
+          box-shadow: 0 4px 14px rgba(29,111,235,.35);
+        }
         .logo-text {
           display: flex;
           flex-direction: column;
-          line-height: 1;
+          line-height: 1.1;
         }
         .logo-name {
           font-family: var(--font-display);
-          font-size: 1.125rem;
+          font-size: 1.25rem;
           font-weight: 900;
           color: var(--accent);
-          letter-spacing: 0.04em;
+          letter-spacing: 0.05em;
         }
         .logo-sub {
-          font-size: 0.55rem;
+          font-size: 0.6rem;
           font-weight: 700;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.12em;
           color: var(--grey-600);
           text-transform: uppercase;
         }
 
         /* ── Desktop nav ── */
-        .desktop-nav { margin-left: auto; }
+        .desktop-nav {
+          margin-left: auto;
+          margin-right: var(--sp-md);
+        }
         .nav-list {
           display: flex;
           align-items: center;
-          gap: 0.25rem;
+          gap: 0.5rem;
         }
         .nav-link {
           display: block;
-          padding: 0.5rem 0.875rem;
-          font-size: 0.875rem;
+          padding: 0.625rem 1rem;
+          font-size: 0.9375rem;
           font-weight: 600;
           color: var(--grey-700);
           border-radius: var(--radius-sm);
@@ -363,7 +375,7 @@ export default function Header() {
         .header-actions {
           display: flex;
           align-items: center;
-          gap: var(--sp-sm);
+          gap: var(--sp-md);
           margin-left: auto;
         }
         @media (min-width: 1025px) {
@@ -407,6 +419,41 @@ export default function Header() {
           transform: translateY(0);
           opacity: 1;
           pointer-events: all;
+        }
+        .mobile-nav-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.25rem var(--sp-sm) var(--sp-md);
+          border-bottom: 1px solid var(--grey-200);
+          margin-bottom: var(--sp-sm);
+        }
+        .mobile-logo-img {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid var(--accent);
+          flex-shrink: 0;
+        }
+        .mobile-logo-text {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.1;
+        }
+        .mobile-logo-name {
+          font-family: var(--font-display);
+          font-size: 1.1rem;
+          font-weight: 900;
+          color: var(--accent);
+          letter-spacing: 0.04em;
+        }
+        .mobile-logo-sub {
+          font-size: 0.55rem;
+          font-weight: 700;
+          letter-spacing: 0.1em;
+          color: var(--grey-600);
+          text-transform: uppercase;
         }
         .mobile-nav ul {
           display: flex;

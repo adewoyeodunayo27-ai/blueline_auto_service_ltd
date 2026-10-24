@@ -49,10 +49,6 @@ export default function Hero() {
 
       <div className="container hero-container">
         <div className="hero-content">
-          <div className="hero-badge">
-            <span className="badge-dot" /> UK Automotive Services
-          </div>
-
           <h1 className="hero-title">
             Your Trusted <span className="hero-highlight">Automotive</span> Partner
           </h1>
@@ -149,30 +145,6 @@ export default function Hero() {
         .hero-content {
           max-width: 720px;
           margin-bottom: var(--sp-4xl);
-        }
-
-        .hero-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          background: rgba(29,111,235,.2);
-          border: 1px solid rgba(29,111,235,.4);
-          color: var(--blue-200);
-          font-size: 0.8125rem;
-          font-weight: 600;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-          padding: 0.35rem 1rem;
-          border-radius: var(--radius-full);
-          margin-bottom: var(--sp-lg);
-        }
-
-        .badge-dot {
-          width: 6px;
-          height: 6px;
-          background: #3b82f6;
-          border-radius: 50%;
-          animation: pulse 2s ease-in-out infinite;
         }
 
         .hero-title {

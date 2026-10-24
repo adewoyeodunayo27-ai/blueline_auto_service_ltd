@@ -75,8 +75,8 @@
   --transition-slow: 400ms ease;
 
   /* Header height */
-  --header-top:  40px;
-  --header-main: 72px;
+  --header-top:  42px;
+  --header-main: 86px;
   --header-total: calc(var(--header-top) + var(--header-main));
 }
 
