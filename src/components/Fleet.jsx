@@ -15,7 +15,9 @@ function FleetCard({ vehicle, onEnquire }) {
           className="fleet-card-img"
           loading="lazy"
           onError={e => {
-            e.target.src = 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=70';
+            if (e.currentTarget.dataset.fallbackTried) return;
+            e.currentTarget.dataset.fallbackTried = 'true';
+            e.currentTarget.src = '/hero-car.jpg';
           }}
         />
         <span className="fleet-category-badge">{vehicle.category}</span>

@@ -1,42 +1,61 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { BUSINESS } from './data/business.js';
 
-import Header         from './components/Header.jsx';
-import Hero           from './components/Hero.jsx';
-import Services       from './components/Services.jsx';
-import About          from './components/About.jsx';
-import Statistics     from './components/Statistics.jsx';
-import Fleet          from './components/Fleet.jsx';
-import PriceList      from './components/PriceList.jsx';
-import Gallery        from './components/Gallery.jsx';
-import QuoteForm      from './components/QuoteForm.jsx';
+import Header from './components/Header.jsx';
+import Footer from './components/Footer.jsx';
+import ScrollToTop from './components/ScrollToTop.jsx';
 import BookingEnquiry from './components/BookingEnquiry.jsx';
-import Contact        from './components/Contact.jsx';
-import Footer         from './components/Footer.jsx';
+
+import HomePage from './pages/HomePage.jsx';
+import AboutPage from './pages/AboutPage.jsx';
+import CarsPage from './pages/CarsPage.jsx';
+import ServicesPage from './pages/ServicesPage.jsx';
+import PricingPage from './pages/PricingPage.jsx';
+import GalleryPage from './pages/GalleryPage.jsx';
+import ContactPage from './pages/ContactPage.jsx';
 
 import { Phone, ChevronUp } from 'lucide-react';
 
-// ── Scroll-reveal hook ───────────────────────────────────────
+// ── Scroll-reveal observer hook (runs on route changes) ───────
 function useRevealOnScroll() {
+  const location = useLocation();
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach(el => {
+        entries.forEach((el) => {
           if (el.isIntersecting) {
             el.target.classList.add('revealed');
             observer.unobserve(el.target);
           }
         });
       },
-      { threshold: 0.12, rootMargin: '0px 0px -48px 0px' }
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
     );
-    const elements = document.querySelectorAll('.reveal');
-    elements.forEach(el => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+
+    // Give React a small tick to mount route components
+    const timer = setTimeout(() => {
+      const elements = document.querySelectorAll('.reveal');
+      elements.forEach((el) => {
+        // If element is already in viewport, reveal immediately
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          el.classList.add('revealed');
+        } else {
+          observer.observe(el);
+        }
+      });
+    }, 60);
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, [location.pathname]);
 }
 
-// ── Back-to-top hook ─────────────────────────────────────────
+// ── Back-to-top button hook ──────────────────────────────────
 function useBackToTop() {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -47,16 +66,17 @@ function useBackToTop() {
   return visible;
 }
 
-export default function App() {
+function MainAppLayout() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const backToTopVisible = useBackToTop();
   useRevealOnScroll();
 
-  const openBooking  = useCallback((vehicle = null) => {
+  const openBooking = useCallback((vehicle = null) => {
     setSelectedVehicle(vehicle);
     setBookingOpen(true);
   }, []);
+
   const closeBooking = useCallback(() => {
     setBookingOpen(false);
     setSelectedVehicle(null);
@@ -69,18 +89,22 @@ export default function App() {
 
   return (
     <>
+      <ScrollToTop />
       <Header />
+
       <main id="main-content">
-        <Hero />
-        <Services />
-        <About />
-        <Statistics />
-        <Fleet onBookingOpen={openBooking} />
-        <PriceList />
-        <Gallery />
-        <QuoteForm />
-        <Contact />
+        <Routes>
+          <Route path="/" element={<HomePage onBookingOpen={openBooking} />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/cars" element={<CarsPage onBookingOpen={openBooking} />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
+
       <Footer />
 
       {/* Floating action buttons */}
@@ -122,5 +146,13 @@ export default function App() {
       {/* Booking enquiry modal */}
       <BookingEnquiry isOpen={bookingOpen} onClose={closeBooking} selectedVehicle={selectedVehicle} />
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <MainAppLayout />
+    </BrowserRouter>
   );
 }

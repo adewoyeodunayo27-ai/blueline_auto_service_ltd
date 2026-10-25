@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { SERVICES } from '../data/services.js';
 import {
   Car, Key, Truck, Settings, Wrench, AlertTriangle, Sparkles, Search,
@@ -8,6 +9,7 @@ import {
 const ICON_MAP = { Car, Key, Truck, Settings, Wrench, AlertTriangle, Sparkles, Search };
 
 function ServiceModal({ service, onClose }) {
+  const navigate = useNavigate();
   if (!service) return null;
   const Icon = ICON_MAP[service.icon] || Car;
 
@@ -41,10 +43,7 @@ function ServiceModal({ service, onClose }) {
               className="btn btn--primary"
               onClick={() => {
                 onClose();
-                setTimeout(() => {
-                  const el = document.querySelector('#quote');
-                  if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-                }, 300);
+                navigate('/pricing');
               }}
             >
               Request a Quote <ArrowRight size={16} />

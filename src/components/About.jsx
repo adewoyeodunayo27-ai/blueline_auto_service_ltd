@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 
 const HIGHLIGHTS = [
@@ -10,11 +11,6 @@ const HIGHLIGHTS = [
 ];
 
 export default function About() {
-  const scrollToContact = () => {
-    const el = document.querySelector('#contact');
-    if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-  };
-
   return (
     <section id="about" className="section about-section" aria-labelledby="about-title">
       <div className="container">
@@ -79,18 +75,13 @@ export default function About() {
             </ul>
 
             <div className="about-actions">
-              <button className="btn btn--primary" onClick={scrollToContact}>
-                Get in Touch <ArrowRight size={16} />
-              </button>
-              <button
-                className="btn btn--outline-blue"
-                onClick={() => {
-                  const el = document.querySelector('#services');
-                  if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-                }}
-              >
-                Our Services
-              </button>
+              <Link to="/contact" className="btn btn--primary">
+                <span>Get in Touch</span>
+                <ArrowRight size={16} />
+              </Link>
+              <Link to="/services" className="btn btn--outline-blue">
+                <span>Our Services</span>
+              </Link>
             </div>
           </div>
         </div>

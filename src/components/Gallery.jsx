@@ -10,6 +10,11 @@ export default function Gallery() {
     ? GALLERY_IMAGES
     : GALLERY_IMAGES.filter(img => img.category === activeCategory);
 
+  const handleCategoryChange = (cat) => {
+    setActiveCategory(cat);
+    setLightboxIdx(null);
+  };
+
   const openLightbox  = (idx) => setLightboxIdx(idx);
   const closeLightbox = useCallback(() => setLightboxIdx(null), []);
 
@@ -59,7 +64,7 @@ export default function Gallery() {
             <button
               key={cat}
               className={`filter-tab${activeCategory === cat ? ' active' : ''}`}
-              onClick={() => setActiveCategory(cat)}
+              onClick={() => handleCategoryChange(cat)}
               role="tab"
               aria-selected={activeCategory === cat}
             >
@@ -73,18 +78,21 @@ export default function Gallery() {
           {filtered.map((img, idx) => (
             <button
               key={img.id}
-              className="gallery-item reveal"
+              className="gallery-item"
               onClick={() => openLightbox(idx)}
               aria-label={`Open ${img.caption} in lightbox`}
               role="listitem"
-              style={{ transitionDelay: `${(idx % 6) * 50}ms` }}
             >
               <img
                 src={img.src}
                 alt={img.caption}
                 className="gallery-img"
                 loading="lazy"
-                onError={e => { e.target.src = 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&q=70'; }}
+                onError={e => {
+                  if (e.currentTarget.dataset.fallbackTried) return;
+                  e.currentTarget.dataset.fallbackTried = 'true';
+                  e.currentTarget.src = '/hero-car.jpg';
+                }}
               />
               <div className="gallery-item-overlay">
                 <span className="gallery-item-caption">{img.caption}</span>
@@ -115,6 +123,11 @@ export default function Gallery() {
               src={activeLightboxItem.src}
               alt={activeLightboxItem.caption}
               key={lightboxIdx}
+              onError={e => {
+                if (e.currentTarget.dataset.fallbackTried) return;
+                e.currentTarget.dataset.fallbackTried = 'true';
+                e.currentTarget.src = '/hero-car.jpg';
+              }}
             />
             <p className="lightbox-caption">
               {activeLightboxItem.caption} · {lightboxIdx + 1} / {filtered.length}
@@ -157,6 +170,18 @@ export default function Gallery() {
           height: 100%;
           padding: 0;
           border: none;
+          animation: galleryFade 0.35s ease-out;
+        }
+
+        @keyframes galleryFade {
+          from {
+            opacity: 0;
+            transform: scale(0.96);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
         }
 
         .gallery-img {

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { ShieldCheck, Wrench, Tag, Heart, ChevronDown } from 'lucide-react';
 import heroCarImg from '../assets/hero-car.jpg';
 
@@ -66,20 +67,20 @@ export default function Hero() {
           </p>
 
           <div className="hero-actions">
-            <button
+            <Link
+              to="/services"
               className="btn btn--primary btn--lg"
-              onClick={() => scrollTo('#services')}
               aria-label="Explore our automotive services"
             >
               Explore Our Services
-            </button>
-            <button
+            </Link>
+            <Link
+              to="/contact"
               className="btn btn--outline btn--lg"
-              onClick={() => scrollTo('#contact')}
-              aria-label="Go to contact section"
+              aria-label="Go to contact page"
             >
               Contact Us
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -102,8 +103,11 @@ export default function Hero() {
       {/* Scroll indicator */}
       <button
         className="hero-scroll"
-        onClick={() => scrollTo('#services')}
-        aria-label="Scroll to services section"
+        onClick={() => {
+          const el = document.querySelector('.welcome-section') || document.querySelector('section');
+          if (el) window.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+        }}
+        aria-label="Scroll down to welcome section"
       >
         <ChevronDown size={24} />
       </button>

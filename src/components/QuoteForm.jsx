@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SERVICES } from '../data/services.js';
 import { BUSINESS } from '../data/business.js';
 import { WhatsAppIcon } from './SocialIcons.jsx';
-import { CheckCircle, AlertCircle, Info } from 'lucide-react';
+import { CheckCircle, AlertCircle } from 'lucide-react';
 
 const INITIAL_STATE = {
   fullName:       '',
@@ -198,14 +198,6 @@ export default function QuoteForm() {
                 {item}
               </div>
             ))}
-            <div className="quote-info-note">
-              <Info size={13} />
-              <span>
-                This form currently simulates a submission. Connect it to a backend
-                service (e.g. Formspree, EmailJS, or a server-side API) to receive real enquiries.
-                Never expose API keys in client-side code.
-              </span>
-            </div>
           </div>
 
           <form
@@ -288,8 +280,7 @@ export default function QuoteForm() {
               <div className="form-error-banner" role="alert">
                 <AlertCircle size={16} />
                 <span>
-                  We were unable to submit your enquiry. Please try again or contact us directly.
-                  No backend is currently connected — see the developer integration note above.
+                  We were unable to submit your enquiry. Please try again or contact us directly on WhatsApp.
                 </span>
               </div>
             )}
@@ -298,7 +289,7 @@ export default function QuoteForm() {
               type="submit"
               className="btn btn--wa btn--lg submit-btn"
             >
-              <WhatsAppIcon size={18} /> Send Quote Request to WhatsApp
+              <WhatsAppIcon size={18} /> Submit Enquiry via WhatsApp
             </button>
           </form>
         </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { BUSINESS } from '../data/business.js';
 import { SERVICES } from '../data/services.js';
 import { Phone, Mail, MapPin, Clock, ArrowRight } from 'lucide-react';
@@ -7,6 +8,16 @@ import LegalModal from './LegalModal.jsx';
 
 const currentYear = new Date().getFullYear();
 
+const QUICK_LINKS = [
+  { label: 'Home', path: '/' },
+  { label: 'About Us', path: '/about' },
+  { label: 'Our Cars', path: '/cars' },
+  { label: 'Services', path: '/services' },
+  { label: 'Price List', path: '/pricing' },
+  { label: 'Gallery', path: '/gallery' },
+  { label: 'Contact Us', path: '/contact' },
+];
+
 export default function Footer() {
   const [legalOpen, setLegalOpen] = useState(false);
   const [legalTab, setLegalTab] = useState('privacy');
@@ -14,22 +25,6 @@ export default function Footer() {
   const openLegal = (tab) => {
     setLegalTab(tab);
     setLegalOpen(true);
-  };
-
-  const scrollTo = (href) => {
-    if (href === '#home') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    const el = document.querySelector(href);
-    if (el) {
-      const topbar = document.querySelector('.header-topbar');
-      const siteHeader = document.querySelector('.site-header');
-      const headerOffset = (topbar ? topbar.getBoundingClientRect().height : 46) +
-                           (siteHeader ? siteHeader.getBoundingClientRect().height : 84);
-      const targetPos = el.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0) - headerOffset - 12;
-      window.scrollTo({ top: Math.max(0, Math.round(targetPos)), behavior: 'smooth' });
-    }
   };
 
   return (
@@ -44,11 +39,13 @@ export default function Footer() {
             </p>
           </div>
           <div className="qq-actions">
-            <button className="btn btn--primary btn--lg" onClick={() => scrollTo('#quote')}>
-              Get a Free Quote <ArrowRight size={18} />
-            </button>
+            <Link to="/pricing" className="btn btn--primary btn--lg">
+              <span>Get a Free Quote</span>
+              <ArrowRight size={18} />
+            </Link>
             <a href={`tel:${BUSINESS.phone}`} className="btn btn--outline btn--lg">
-              <Phone size={18} /> Call Us
+              <Phone size={18} />
+              <span>Call Us</span>
             </a>
           </div>
         </div>
@@ -60,7 +57,7 @@ export default function Footer() {
           <div className="footer-grid">
             {/* Column 1: Brand */}
             <div className="footer-col footer-col--brand">
-              <div className="footer-logo">
+              <Link to="/" className="footer-logo" aria-label="Blueline Auto Services Ltd Home">
                 <img
                   src={BUSINESS.logo || '/logo.png'}
                   alt="Blueline Auto Services Ltd Logo"
@@ -71,7 +68,7 @@ export default function Footer() {
                   <span className="footer-logo-sub">AUTO SERVICES LTD</span>
                   <span className="footer-logo-slogan">Driven by Trust. Powered by Excellence.</span>
                 </div>
-              </div>
+              </Link>
               <p className="footer-brand-desc">
                 Providing professional automotive services across the United Kingdom, including vehicle
                 sales, hire, servicing, repairs, recovery, and valeting — all under one roof.
@@ -88,19 +85,11 @@ export default function Footer() {
             <div className="footer-col">
               <h3 className="footer-col-title">Quick Links</h3>
               <ul className="footer-links">
-                {[
-                  { label: 'Home',       href: '#home' },
-                  { label: 'About Us',   href: '#about' },
-                  { label: 'Services',   href: '#services' },
-                  { label: 'Price List', href: '#prices' },
-                  { label: 'Our Fleet',  href: '#fleet' },
-                  { label: 'Gallery',    href: '#gallery' },
-                  { label: 'Contact',    href: '#contact' },
-                ].map(link => (
-                  <li key={link.href}>
-                    <button className="footer-link" onClick={() => scrollTo(link.href)}>
+                {QUICK_LINKS.map(link => (
+                  <li key={link.path}>
+                    <Link to={link.path} className="footer-link">
                       {link.label}
-                    </button>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -112,9 +101,9 @@ export default function Footer() {
               <ul className="footer-links">
                 {SERVICES.map(s => (
                   <li key={s.id}>
-                    <button className="footer-link" onClick={() => scrollTo('#services')}>
+                    <Link to="/services" className="footer-link">
                       {s.title}
-                    </button>
+                    </Link>
                   </li>
                 ))}
               </ul>

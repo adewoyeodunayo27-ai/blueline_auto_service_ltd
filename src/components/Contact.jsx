@@ -8,7 +8,6 @@ function ContactForm() {
     name: '',
     email: '',
     phone: '',
-    service: 'General Enquiry',
     message: '',
   });
   const [reviewMessage, setReviewMessage] = useState('');
@@ -19,10 +18,22 @@ function ContactForm() {
 
   const validate = (v) => {
     const errs = {};
-    if (!v.name.trim()) errs.name = 'Please enter your name.';
-    if (!v.email.trim()) errs.email = 'Please enter your email.';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) errs.email = 'Please enter a valid email.';
-    if (!v.message.trim()) errs.message = 'Please enter your message.';
+    if (!v.name.trim()) {
+      errs.name = 'Please enter your full name.';
+    }
+    if (!v.email.trim()) {
+      errs.email = 'Please enter your email address.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email.trim())) {
+      errs.email = 'Please enter a valid email address.';
+    }
+    if (!v.phone.trim()) {
+      errs.phone = 'Please enter your phone number.';
+    } else if (!/^[0-9+\s\-()]{7,20}$/.test(v.phone.trim())) {
+      errs.phone = 'Please enter a valid phone number.';
+    }
+    if (!v.message.trim()) {
+      errs.message = 'Please enter your enquiry details.';
+    }
     return errs;
   };
 
@@ -50,29 +61,24 @@ function ContactForm() {
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    // Structured review message for WhatsApp (clean ASCII to prevent encoding corruption)
+    // Format readable WhatsApp message matching specification exactly
     const lines = [
-      `*NEW CONTACT ENQUIRY*`,
-      `*Blueline Auto Services Ltd*`,
-      `--------------------------------`,
-      `*Name:* ${values.name.trim()}`,
-      `*Email:* ${values.email.trim()}`,
-      values.phone.trim() ? `*Phone:* ${values.phone.trim()}` : null,
-      `*Service Required:* ${values.service}`,
-      `--------------------------------`,
-      `*Message:*`,
-      `${values.message.trim()}`,
-      `--------------------------------`,
-      `_Sent from Blueline Auto Services website_`
-    ].filter(Boolean).join('\n');
+      'New Website Enquiry \u2013 Blueline Auto Services Ltd',
+      `Full Name: ${values.name.trim()}`,
+      `Email Address: ${values.email.trim()}`,
+      `Phone Number: ${values.phone.trim()}`,
+      `Enquiry Details: ${values.message.trim()}`,
+      'Please assist me with this enquiry.'
+    ].join('\n');
 
-    const url = `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(lines)}`;
+    const encoded = encodeURIComponent(lines);
+    const url = `https://wa.me/447757772952?text=${encoded}`;
 
     setReviewMessage(lines);
     setWaUrl(url);
     setStatus('success');
 
-    // Immediately open WhatsApp chat
+    // Immediately open WhatsApp conversation
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
@@ -110,7 +116,7 @@ function ContactForm() {
           style={{ width: '100%', justifyContent: 'center' }}
           onClick={() => {
             setStatus('idle');
-            setValues({ name: '', email: '', phone: '', service: 'General Enquiry', message: '' });
+            setValues({ name: '', email: '', phone: '', message: '' });
             setTouched({});
           }}
         >
@@ -123,7 +129,7 @@ function ContactForm() {
   return (
     <form onSubmit={handleSubmit} noValidate aria-label="Contact form">
       <div className="form-group">
-        <label htmlFor="c-name">Your Name *</label>
+        <label htmlFor="c-name">Full Name *</label>
         <input
           id="c-name"
           name="name"
@@ -133,10 +139,12 @@ function ContactForm() {
           onChange={handleChange}
           onBlur={handleBlur}
           className={errors.name && touched.name ? 'error' : ''}
+          aria-describedby={errors.name && touched.name ? 'err-name' : undefined}
+          aria-invalid={!!(errors.name && touched.name)}
           required
         />
         {errors.name && touched.name && (
-          <p className="error-msg" role="alert"><AlertCircle size={12}/> {errors.name}</p>
+          <p id="err-name" className="error-msg" role="alert"><AlertCircle size={12}/> {errors.name}</p>
         )}
       </div>
 
@@ -151,48 +159,37 @@ function ContactForm() {
           onChange={handleChange}
           onBlur={handleBlur}
           className={errors.email && touched.email ? 'error' : ''}
+          aria-describedby={errors.email && touched.email ? 'err-email' : undefined}
+          aria-invalid={!!(errors.email && touched.email)}
           required
         />
         {errors.email && touched.email && (
-          <p className="error-msg" role="alert"><AlertCircle size={12}/> {errors.email}</p>
+          <p id="err-email" className="error-msg" role="alert"><AlertCircle size={12}/> {errors.email}</p>
         )}
       </div>
 
       <div className="form-group">
-        <label htmlFor="c-phone">Phone Number <span className="optional-tag">(optional)</span></label>
+        <label htmlFor="c-phone">Phone Number *</label>
         <input
           id="c-phone"
           name="phone"
           type="tel"
-          placeholder="e.g. +44 7123 456789"
+          placeholder="e.g. +44 7757 772952"
           value={values.phone}
           onChange={handleChange}
           onBlur={handleBlur}
+          className={errors.phone && touched.phone ? 'error' : ''}
+          aria-describedby={errors.phone && touched.phone ? 'err-phone' : undefined}
+          aria-invalid={!!(errors.phone && touched.phone)}
+          required
         />
+        {errors.phone && touched.phone && (
+          <p id="err-phone" className="error-msg" role="alert"><AlertCircle size={12}/> {errors.phone}</p>
+        )}
       </div>
 
       <div className="form-group">
-        <label htmlFor="c-service">Service Needed</label>
-        <select
-          id="c-service"
-          name="service"
-          value={values.service}
-          onChange={handleChange}
-        >
-          <option value="General Enquiry">General Enquiry</option>
-          <option value="Vehicle Sales">Vehicle Sales</option>
-          <option value="Vehicle Hire / Rental">Vehicle Hire / Rental</option>
-          <option value="Servicing & MOT Prep">Servicing & MOT Prep</option>
-          <option value="Vehicle Repairs & Diagnostics">Vehicle Repairs & Diagnostics</option>
-          <option value="24/7 Breakdown Recovery">24/7 Breakdown Recovery</option>
-          <option value="Valeting & Detailing">Valeting & Detailing</option>
-          <option value="Vehicle Sourcing">Vehicle Sourcing</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="c-message">Message *</label>
+        <label htmlFor="c-message">Enquiry Details *</label>
         <textarea
           id="c-message"
           name="message"
@@ -201,11 +198,13 @@ function ContactForm() {
           onChange={handleChange}
           onBlur={handleBlur}
           className={errors.message && touched.message ? 'error' : ''}
+          aria-describedby={errors.message && touched.message ? 'err-message' : undefined}
+          aria-invalid={!!(errors.message && touched.message)}
           placeholder="Describe what you need assistance with..."
           required
         />
         {errors.message && touched.message && (
-          <p className="error-msg" role="alert"><AlertCircle size={12}/> {errors.message}</p>
+          <p id="err-message" className="error-msg" role="alert"><AlertCircle size={12}/> {errors.message}</p>
         )}
       </div>
 
@@ -214,7 +213,7 @@ function ContactForm() {
         className="btn btn--wa"
         style={{ width: '100%', justifyContent: 'center' }}
       >
-        <WhatsAppIcon size={18} /> Send to WhatsApp
+        <WhatsAppIcon size={18} /> Submit Enquiry via WhatsApp
       </button>
 
       <p className="form-note">

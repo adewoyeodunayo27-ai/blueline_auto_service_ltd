@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PRICE_LIST } from '../data/services.js';
 import { Settings, Wrench, Sparkles, AlertTriangle, Key, ArrowRight, Info } from 'lucide-react';
 
@@ -6,10 +7,15 @@ const ICON_MAP = { Settings, Wrench, Sparkles, AlertTriangle, Key };
 
 export default function PriceList() {
   const [activeCategory, setActiveCategory] = useState(PRICE_LIST[0].category);
+  const navigate = useNavigate();
 
   const scrollToQuote = () => {
     const el = document.querySelector('#quote');
-    if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+    if (el) {
+      window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+    } else {
+      navigate('/pricing#quote');
+    }
   };
 
   const activeData = PRICE_LIST.find(p => p.category === activeCategory);

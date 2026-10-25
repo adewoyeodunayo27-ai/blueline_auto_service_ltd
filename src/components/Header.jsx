@@ -1,18 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { BUSINESS } from '../data/business.js';
 import { Phone, Mail, Clock, Menu, X, ArrowRight } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { label: 'Home', href: '#home' },
-  { label: 'About Us', href: '#about' },
-  { label: 'Our Cars', href: '#fleet' },
-  { label: 'Services', href: '#services' },
-  { label: 'Contact Us', href: '#contact' },
+  { label: 'Home', path: '/' },
+  { label: 'About Us', path: '/about' },
+  { label: 'Our Cars', path: '/cars' },
+  { label: 'Services', path: '/services' },
+  { label: 'Price List', path: '/pricing' },
+  { label: 'Contact Us', path: '/contact' },
 ];
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -25,37 +28,11 @@ export default function Header() {
     document.body.style.overflow = '';
   }, []);
 
-  const handleNavClick = useCallback((e, href) => {
-    if (e && e.preventDefault) e.preventDefault();
-    document.body.style.overflow = '';
+  // Close drawer on route change
+  useEffect(() => {
     setMobileOpen(false);
-
-    if (href === '#home') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-
-    const target = document.querySelector(href);
-    if (target) {
-      setTimeout(() => {
-        document.body.style.overflow = '';
-        const topbar = document.querySelector('.header-topbar');
-        const siteHeader = document.querySelector('.site-header');
-        const topbarHeight = topbar ? topbar.getBoundingClientRect().height : 46;
-        const siteHeaderHeight = siteHeader ? siteHeader.getBoundingClientRect().height : 84;
-        const headerOffset = topbarHeight + siteHeaderHeight;
-
-        const currentScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-        const targetTop = target.getBoundingClientRect().top;
-        const targetPos = targetTop + currentScrollY - headerOffset - 12;
-
-        window.scrollTo({
-          top: Math.max(0, Math.round(targetPos)),
-          behavior: 'smooth',
-        });
-      }, 50);
-    }
-  }, []);
+    document.body.style.overflow = '';
+  }, [location.pathname]);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
@@ -78,7 +55,7 @@ export default function Header() {
               </span>
             </div>
 
-            {/* Clickable Phone and Email (Centered where space allows, neatly arranged on mobile) */}
+            {/* Clickable Phone and Email */}
             <div className="topbar-contacts">
               <a
                 href={`tel:${BUSINESS.phone}`}
@@ -120,10 +97,10 @@ export default function Header() {
         <div className="container header-container">
           <div className="header-inner">
             {/* Logo, Company Name & Slogan */}
-            <a
-              href="#home"
+            <Link
+              to="/"
               className="brand-logo"
-              onClick={(e) => handleNavClick(e, '#home')}
+              onClick={closeMobile}
               aria-label="Blueline Auto Services Ltd — Return to Home"
             >
               <img
@@ -138,20 +115,20 @@ export default function Header() {
                 </div>
                 <span className="brand-slogan">Driven by Trust. Powered by Excellence.</span>
               </div>
-            </a>
+            </Link>
 
             {/* Desktop Navigation Links */}
             <nav className="desktop-nav" aria-label="Main Navigation">
               <ul className="nav-list" role="list">
                 {NAV_ITEMS.map((item) => (
-                  <li key={item.href} className="nav-item">
-                    <a
-                      href={item.href}
-                      className="nav-link"
-                      onClick={(e) => handleNavClick(e, item.href)}
+                  <li key={item.path} className="nav-item">
+                    <NavLink
+                      to={item.path}
+                      className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+                      end={item.path === '/'}
                     >
                       {item.label}
-                    </a>
+                    </NavLink>
                   </li>
                 ))}
               </ul>
@@ -159,15 +136,15 @@ export default function Header() {
 
             {/* Desktop Action & Mobile Menu Toggle */}
             <div className="header-actions">
-              <a
-                href="#fleet"
+              <Link
+                to="/cars"
                 className="btn-view-cars"
-                onClick={(e) => handleNavClick(e, '#fleet')}
+                onClick={closeMobile}
                 aria-label="View our cars available for sale and hire"
               >
                 <span>View Our Cars</span>
                 <ArrowRight size={15} aria-hidden="true" className="btn-arrow" />
-              </a>
+              </Link>
 
               <button
                 type="button"
@@ -210,15 +187,16 @@ export default function Header() {
           <nav className="mobile-nav-menu" aria-label="Mobile Links">
             <ul className="mobile-nav-list" role="list">
               {NAV_ITEMS.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className="mobile-nav-link"
-                    onClick={(e) => handleNavClick(e, item.href)}
+                <li key={item.path}>
+                  <NavLink
+                    to={item.path}
+                    className={({ isActive }) => `mobile-nav-link${isActive ? ' active' : ''}`}
+                    onClick={closeMobile}
+                    end={item.path === '/'}
                   >
                     <span>{item.label}</span>
                     <ArrowRight size={16} className="mobile-link-arrow" aria-hidden="true" />
-                  </a>
+                  </NavLink>
                 </li>
               ))}
             </ul>
@@ -226,14 +204,14 @@ export default function Header() {
 
           {/* Prominent "View Our Cars" Button */}
           <div className="mobile-cta-box">
-            <a
-              href="#fleet"
+            <Link
+              to="/cars"
               className="btn-view-cars btn-view-cars--mobile"
-              onClick={(e) => handleNavClick(e, '#fleet')}
+              onClick={closeMobile}
             >
               <span>View Our Cars</span>
               <ArrowRight size={16} aria-hidden="true" />
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Direct Contact Quick Bar */}
@@ -607,6 +585,23 @@ export default function Header() {
           background: #EFF6FF;
         }
 
+        .nav-link.active {
+          color: #1D6FEB;
+          background: #EFF6FF;
+          font-weight: 700;
+        }
+
+        .nav-link.active::after {
+          content: '';
+          position: absolute;
+          bottom: 0.15rem;
+          left: 1rem;
+          right: 1rem;
+          height: 2px;
+          background: #1D6FEB;
+          border-radius: 2px;
+        }
+
         /* ══════════════════════════════════════════════════════
            4. "VIEW OUR CARS" ACTION BUTTON
            ══════════════════════════════════════════════════════ */
@@ -796,6 +791,18 @@ export default function Header() {
         .mobile-nav-link:hover,
         .mobile-nav-link:active {
           background: #EFF6FF;
+          color: #1D6FEB;
+        }
+
+        .mobile-nav-link.active {
+          background: #EFF6FF;
+          color: #1D6FEB;
+          font-weight: 700;
+          border-left: 3px solid #1D6FEB;
+          padding-left: calc(1rem - 3px);
+        }
+
+        .mobile-nav-link.active .mobile-link-arrow {
           color: #1D6FEB;
         }
 
