@@ -88,7 +88,7 @@ export default function LegalModal({ isOpen, onClose, activeTab = 'privacy', set
               </p>
               <h3>4. Data Security & Storage</h3>
               <p>
-                All personal information is held securely with appropriate technical safeguards. If you submit a customer review, it is stored in our protected database for moderation before public display.
+                All personal information is held securely with appropriate technical safeguards in accordance with UK data protection regulations.
               </p>
               <h3>5. Your Rights</h3>
               <p>

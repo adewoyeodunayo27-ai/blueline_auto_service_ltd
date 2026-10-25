@@ -9,7 +9,6 @@ import Statistics     from './components/Statistics.jsx';
 import Fleet          from './components/Fleet.jsx';
 import PriceList      from './components/PriceList.jsx';
 import Gallery        from './components/Gallery.jsx';
-import Testimonials   from './components/Testimonials.jsx';
 import QuoteForm      from './components/QuoteForm.jsx';
 import BookingEnquiry from './components/BookingEnquiry.jsx';
 import Contact        from './components/Contact.jsx';
@@ -79,7 +78,6 @@ export default function App() {
         <Fleet onBookingOpen={openBooking} />
         <PriceList />
         <Gallery />
-        <Testimonials />
         <QuoteForm />
         <Contact />
       </main>

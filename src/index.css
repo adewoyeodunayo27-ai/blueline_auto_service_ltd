@@ -136,7 +136,6 @@ section[id],
 #services,
 #prices,
 #gallery,
-#reviews,
 #quote,
 #contact {
   scroll-margin-top: calc(var(--header-top, 46px) + var(--header-main, 84px) + 12px);
