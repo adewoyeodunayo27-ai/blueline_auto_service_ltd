@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Star, X, CheckCircle, AlertCircle, Send, ShieldCheck } from 'lucide-react';
 import { isSupabaseConfigured, submitTestimonial } from '../lib/supabase.js';
+import { BUSINESS } from '../data/business.js';
+import { WhatsAppIcon } from './SocialIcons.jsx';
 
 const SERVICE_OPTIONS = [
   'Vehicle Sales & Sourcing',
@@ -72,31 +74,62 @@ export default function WriteReviewModal({ isOpen, onClose, onReviewSubmitted })
       return;
     }
 
-    if (!isSupabaseConfigured) {
-      setErrorMsg('Database connection is not configured yet. Please configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file to enable live review submissions.');
-      return;
-    }
-
     setSubmitting(true);
     setErrorMsg('');
 
     try {
-      await submitTestimonial({
-        customerName,
-        serviceReceived,
-        starRating,
-        reviewText,
-      });
+      if (isSupabaseConfigured) {
+        await submitTestimonial({
+          customerName,
+          serviceReceived,
+          starRating,
+          reviewText,
+        });
+      } else {
+        // Fallback: save to local queue
+        try {
+          const localReviews = JSON.parse(localStorage.getItem('blueline_local_reviews') || '[]');
+          localReviews.push({
+            id: 'local_' + Date.now(),
+            customer_name: customerName.trim(),
+            service_received: serviceReceived ? serviceReceived.trim() : null,
+            star_rating: Number(starRating),
+            review_text: reviewText.trim(),
+            approval_status: 'pending',
+            created_at: new Date().toISOString()
+          });
+          localStorage.setItem('blueline_local_reviews', JSON.stringify(localReviews));
+        } catch (storageErr) {
+          console.warn('Local storage save failed:', storageErr);
+        }
+      }
 
       setStatus('success');
       if (onReviewSubmitted) onReviewSubmitted();
     } catch (err) {
       console.error('Error submitting review:', err);
       setStatus('error');
-      setErrorMsg(err.message || 'Failed to submit your review to the database. Please try again.');
+      setErrorMsg(err.message || 'Failed to submit your review. Please try again.');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const getWhatsAppReviewUrl = () => {
+    const lines = [
+      `*CUSTOMER REVIEW*`,
+      `*Blueline Auto Services Ltd*`,
+      `--------------------------------`,
+      `*Name:* ${customerName.trim()}`,
+      `*Rating:* ${starRating} / 5 Stars`,
+      serviceReceived ? `*Service:* ${serviceReceived}` : null,
+      `--------------------------------`,
+      `*Review:*`,
+      `"${reviewText.trim()}"`,
+      `--------------------------------`,
+      `_Sent from Blueline Auto Services website_`
+    ].filter(Boolean).join('\n');
+    return `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(lines)}`;
   };
 
   return (
@@ -123,15 +156,28 @@ export default function WriteReviewModal({ isOpen, onClose, onReviewSubmitted })
             </div>
             <h3 className="review-success-title">Thank You for Your Review!</h3>
             <p className="review-success-desc">
-              Your testimonial has been securely submitted to our database. To protect the integrity of our feedback, all new submissions remain <strong>pending administrator approval</strong> before being published to the website.
+              Your testimonial has been securely received. To protect the integrity of our feedback, all new submissions remain <strong>pending administrator approval</strong> before being published to the website.
             </p>
             <div className="review-moderation-badge">
               <ShieldCheck size={16} />
               <span>Pending Review Verification by Blueline Auto Services Ltd</span>
             </div>
-            <button className="btn btn--primary" onClick={handleClose} style={{ marginTop: '1.5rem', width: '100%', justifyContent: 'center' }}>
-              Return to Website
-            </button>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '1.5rem', width: '100%' }}>
+              <a
+                href={getWhatsAppReviewUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn--outline"
+                style={{ justifyContent: 'center', borderColor: '#25D366', color: '#128C7E' }}
+              >
+                <WhatsAppIcon size={18} />
+                <span>Also Share Review on WhatsApp</span>
+              </a>
+              <button className="btn btn--primary" onClick={handleClose} style={{ justifyContent: 'center' }}>
+                Return to Website
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="review-form">
