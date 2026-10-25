@@ -17,8 +17,19 @@ export default function Footer() {
   };
 
   const scrollTo = (href) => {
+    if (href === '#home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     const el = document.querySelector(href);
-    if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+    if (el) {
+      const topbar = document.querySelector('.header-topbar');
+      const siteHeader = document.querySelector('.site-header');
+      const headerOffset = (topbar ? topbar.getBoundingClientRect().height : 46) +
+                           (siteHeader ? siteHeader.getBoundingClientRect().height : 84);
+      const targetPos = el.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0) - headerOffset - 12;
+      window.scrollTo({ top: Math.max(0, Math.round(targetPos)), behavior: 'smooth' });
+    }
   };
 
   return (

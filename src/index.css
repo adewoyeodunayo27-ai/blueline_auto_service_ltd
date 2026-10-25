@@ -128,6 +128,20 @@ body {
   position: relative;
 }
 
+/* Offset all section anchors below the fixed double header */
+section[id],
+#home,
+#about,
+#fleet,
+#services,
+#prices,
+#gallery,
+#reviews,
+#quote,
+#contact {
+  scroll-margin-top: calc(var(--header-top, 46px) + var(--header-main, 84px) + 12px);
+}
+
 img {
   max-width: 100%;
   height: auto;

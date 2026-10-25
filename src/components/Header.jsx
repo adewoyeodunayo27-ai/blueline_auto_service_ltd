@@ -26,8 +26,7 @@ export default function Header() {
   }, []);
 
   const handleNavClick = useCallback((e, href) => {
-    e.preventDefault();
-    // 1. Immediately unlock body scroll so window.scrollTo is not blocked by mobile menu overflow lock
+    if (e && e.preventDefault) e.preventDefault();
     document.body.style.overflow = '';
     setMobileOpen(false);
 
@@ -38,20 +37,23 @@ export default function Header() {
 
     const target = document.querySelector(href);
     if (target) {
-      // 2. Allow drawer close transition to start, then scroll smoothly with fixed header offset
       setTimeout(() => {
         document.body.style.overflow = '';
-        const headerTotal = parseInt(
-          getComputedStyle(document.documentElement).getPropertyValue('--header-total') || '138',
-          10
-        );
-        const rect = target.getBoundingClientRect();
-        const targetPos = rect.top + window.pageYOffset - (headerTotal - 6);
+        const topbar = document.querySelector('.header-topbar');
+        const siteHeader = document.querySelector('.site-header');
+        const topbarHeight = topbar ? topbar.getBoundingClientRect().height : 46;
+        const siteHeaderHeight = siteHeader ? siteHeader.getBoundingClientRect().height : 84;
+        const headerOffset = topbarHeight + siteHeaderHeight;
+
+        const currentScrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+        const targetTop = target.getBoundingClientRect().top;
+        const targetPos = targetTop + currentScrollY - headerOffset - 12;
+
         window.scrollTo({
-          top: Math.max(0, targetPos),
+          top: Math.max(0, Math.round(targetPos)),
           behavior: 'smooth',
         });
-      }, 30);
+      }, 50);
     }
   }, []);
 
