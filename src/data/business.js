@@ -19,12 +19,12 @@ export const BUSINESS = {
 
   // Address
   addressLine1: '65 Watch House Lane',
-  addressLine2: 'Bentley, Doncaster',
+  addressLine2: 'Doncaster, UK',
   county: 'South Yorkshire',
   postcode: 'DN5 9LY',
   country: 'United Kingdom',
-  fullAddress: '65 Watch House Lane, Bentley, Doncaster, DN5 9LY, United Kingdom',
-  googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=65+Watch+House+Lane+Bentley+Doncaster+DN5+9LY',
+  fullAddress: '65 Watch House Lane, Doncaster, DN5 9LY, UK',
+  googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=65+Watch+House+Lane%2C+Doncaster%2C+DN5+9LY%2C+UK',
 
   // Operating Hours
   hours: [

@@ -132,10 +132,16 @@ export default function Footer() {
                   <Mail size={15} />
                   <span>{BUSINESS.email}</span>
                 </a>
-                <div className="footer-contact-item" style={{ cursor: 'default' }}>
+                <a
+                  href={BUSINESS.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer-contact-item"
+                  title="View on Google Maps"
+                >
                   <MapPin size={15} />
-                  <span>{BUSINESS.addressLine1}, {BUSINESS.addressLine2}, {BUSINESS.country}</span>
-                </div>
+                  <span>{BUSINESS.addressLine1}, {BUSINESS.addressLine2}, {BUSINESS.postcode}</span>
+                </a>
               </div>
 
               <h3 className="footer-col-title" style={{ marginTop: 'var(--sp-lg)' }}>Opening Hours</h3>

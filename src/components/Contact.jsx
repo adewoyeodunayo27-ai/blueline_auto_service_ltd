@@ -1,5 +1,5 @@
 import { BUSINESS } from '../data/business.js';
-import { Phone, Mail, MapPin, Clock, AlertCircle } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, AlertCircle, Navigation, ExternalLink, Copy, Check } from 'lucide-react';
 import { WhatsAppIcon } from './SocialIcons.jsx';
 import { useState } from 'react';
 
@@ -225,6 +225,24 @@ function ContactForm() {
 }
 
 export default function Contact() {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyAddress = () => {
+    const textToCopy = `Blueline Auto Services Ltd\n65 Watch House Lane\nDoncaster, UK\nPostcode: DN5 9LY`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      }).catch(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      });
+    } else {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
   return (
     <section id="contact" className="section contact-section" aria-labelledby="contact-title">
       <div className="container">
@@ -266,14 +284,11 @@ export default function Contact() {
                 <div>
                   <p className="contact-detail-label">Address</p>
                   <address className="contact-detail-value" style={{ fontStyle: 'normal' }}>
-                    {BUSINESS.addressLine1}<br />
-                    {BUSINESS.addressLine2}<br />
-                    {BUSINESS.county} {BUSINESS.postcode}<br />
-                    {BUSINESS.country}
+                    <strong>Blueline Auto Services Ltd</strong><br />
+                    65 Watch House Lane<br />
+                    Doncaster, UK<br />
+                    Postcode: DN5 9LY
                   </address>
-                  <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,.45)', marginTop: '0.25rem', fontStyle: 'italic' }}>
-                    Address to be confirmed by client
-                  </p>
                   <a href={BUSINESS.googleMapsUrl} className="contact-directions-link" target="_blank" rel="noopener noreferrer">
                     Get directions →
                   </a>
@@ -297,25 +312,161 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Form + map */}
+          {/* Form */}
           <div className="contact-right reveal">
             <div className="contact-form-card">
               <h3 className="contact-form-heading">Send a Message</h3>
               <ContactForm />
             </div>
+          </div>
+        </div>
 
-            {/* Map placeholder */}
-            <div className="map-placeholder" aria-label="Map location placeholder">
-              <div className="map-placeholder-inner">
-                <MapPin size={36} />
-                <p>Map will appear here once a confirmed business address is provided.</p>
+        {/* ========================================================
+            FIND US — INTERACTIVE GOOGLE MAP & LOCATION SHOWCASE
+            ======================================================== */}
+        <div id="location" className="contact-location-wrap reveal">
+          <div className="location-card">
+            {/* Left / Beside the Map: Full Company Address & Actions */}
+            <div className="location-info-panel">
+              <div className="location-badge">
+                <span className="location-badge-dot" aria-hidden="true" />
+                <span>Workshop & Recovery Depot</span>
+              </div>
+
+              <h3 className="location-title">
+                Find Us — Blueline Auto Services Ltd
+              </h3>
+
+              <p className="location-subtitle">
+                Visit our premises in Doncaster for vehicle sales, hire pick-ups, diagnostics, servicing, and repairs.
+              </p>
+
+              <div className="location-address-box">
+                <div className="location-address-header">
+                  <div className="location-pin-avatar" aria-hidden="true">
+                    <MapPin size={20} />
+                  </div>
+                  <div>
+                    <span className="location-company-name">Blueline Auto Services Ltd</span>
+                    <span className="location-address-tag">Company Address</span>
+                  </div>
+                </div>
+
+                <address className="location-address-text">
+                  <span className="address-line address-line--street">65 Watch House Lane</span>
+                  <span className="address-line address-line--city">Doncaster, UK</span>
+                  <span className="address-line address-line--postcode">
+                    Postcode: <strong>DN5 9LY</strong>
+                  </span>
+                </address>
+
+                <div className="location-address-actions">
+                  <button
+                    type="button"
+                    onClick={handleCopyAddress}
+                    className={`btn-copy-address${copied ? ' copied' : ''}`}
+                    aria-label="Copy full address to clipboard"
+                  >
+                    {copied ? (
+                      <>
+                        <Check size={14} className="copied-check" aria-hidden="true" />
+                        <span>Address Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy size={14} aria-hidden="true" />
+                        <span>Copy Address</span>
+                      </>
+                    )}
+                  </button>
+
+                  <a
+                    href={`tel:${BUSINESS.phone}`}
+                    className="btn-call-workshop"
+                    aria-label={`Call Blueline Auto Services on ${BUSINESS.phoneDisplay}`}
+                  >
+                    <Phone size={13} aria-hidden="true" />
+                    <span>Call Us</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Useful arrival notes */}
+              <div className="location-amenities">
+                <div className="amenity-item">
+                  <span className="amenity-icon" aria-hidden="true">🚗</span>
+                  <span className="amenity-text">Easy road access via Watch House Lane & Doncaster arterial routes</span>
+                </div>
+                <div className="amenity-item">
+                  <span className="amenity-icon" aria-hidden="true">🅿️</span>
+                  <span className="amenity-text">Customer parking & vehicle drop-off area available</span>
+                </div>
+              </div>
+
+              {/* Prominent Get Directions CTA button */}
+              <div className="location-cta-box">
                 <a
                   href={BUSINESS.googleMapsUrl}
-                  className="btn btn--primary btn--sm"
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="btn btn--primary btn--get-directions"
+                  id="get-directions-btn"
+                  aria-label="Get Directions to Blueline Auto Services Ltd on Google Maps (opens in a new tab)"
                 >
-                  Open in Google Maps
+                  <Navigation size={18} className="btn-nav-icon" aria-hidden="true" />
+                  <span>Get Directions</span>
+                  <ExternalLink size={15} className="btn-external-icon" aria-hidden="true" />
+                </a>
+                <p className="location-cta-hint">
+                  Opens Google Maps navigation directly to 65 Watch House Lane, Doncaster, DN5 9LY, UK
+                </p>
+              </div>
+            </div>
+
+            {/* Right / Map Embed Panel */}
+            <div className="location-map-panel">
+              <div className="map-panel-bar">
+                <div className="map-status">
+                  <span className="map-status-dot" aria-hidden="true" />
+                  <span className="map-status-text">Interactive Google Map</span>
+                </div>
+                <a
+                  href={BUSINESS.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="map-fullscreen-link"
+                  aria-label="Open location in Google Maps (opens in new tab)"
+                >
+                  <span>Open in Google Maps</span>
+                  <ExternalLink size={13} aria-hidden="true" />
+                </a>
+              </div>
+
+              <div className="map-frame-wrapper">
+                <iframe
+                  src="https://maps.google.com/maps?q=65+Watch+House+Lane%2C+Doncaster%2C+DN5+9LY%2C+UK&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                  title="Find Us — Blueline Auto Services Ltd Google Map"
+                  className="map-iframe"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                  aria-label="Google Map showing Blueline Auto Services Ltd at 65 Watch House Lane, Doncaster, DN5 9LY, UK"
+                />
+              </div>
+
+              <div className="map-panel-caption">
+                <div className="map-caption-address">
+                  <MapPin size={15} className="map-caption-pin" aria-hidden="true" />
+                  <span><strong>65 Watch House Lane</strong>, Doncaster, UK • Postcode: DN5 9LY</span>
+                </div>
+                <a
+                  href={BUSINESS.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="map-caption-cta"
+                  aria-label="View route on Google Maps"
+                >
+                  View Route →
                 </a>
               </div>
             </div>
@@ -577,30 +728,410 @@ export default function Contact() {
           line-height: 1.4;
         }
 
-        /* Map */
-        .map-placeholder {
-          background: var(--grey-200);
+        /* ========================================================
+           FIND US — LOCATION & INTERACTIVE GOOGLE MAP STYLES
+           ======================================================== */
+        .contact-location-wrap {
+          margin-top: var(--sp-2xl);
+        }
+
+        .location-card {
+          background: var(--navy);
           border-radius: var(--radius-xl);
-          height: 200px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 20px 40px -15px rgba(13, 27, 62, 0.35);
+          display: grid;
+          grid-template-columns: 440px 1fr;
+          overflow: hidden;
+        }
+
+        @media (max-width: 980px) {
+          .location-card {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        /* Left / Beside Panel */
+        .location-info-panel {
+          padding: var(--sp-xl);
+          display: flex;
+          flex-direction: column;
+          gap: 1.125rem;
+          color: white;
+          background: linear-gradient(180deg, rgba(21, 34, 82, 0.6) 0%, rgba(13, 27, 62, 0.95) 100%);
+          border-right: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        @media (max-width: 980px) {
+          .location-info-panel {
+            border-right: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          }
+        }
+
+        .location-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          align-self: flex-start;
+          padding: 0.25rem 0.75rem;
+          border-radius: 9999px;
+          background: rgba(29, 111, 235, 0.2);
+          border: 1px solid rgba(96, 165, 250, 0.35);
+          color: var(--blue-300);
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+        }
+
+        .location-badge-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: var(--blue-400);
+          box-shadow: 0 0 8px var(--blue-400);
+          animation: badge-pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes badge-pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .location-title {
+          font-family: var(--font-display);
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: var(--white);
+          line-height: 1.25;
+          letter-spacing: -0.01em;
+          margin: 0;
+        }
+
+        .location-subtitle {
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.72);
+          line-height: 1.55;
+          margin: 0;
+        }
+
+        .location-address-box {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: var(--radius-lg);
+          padding: 1.125rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .location-address-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .location-pin-avatar {
+          width: 38px;
+          height: 38px;
+          border-radius: var(--radius-md);
+          background: rgba(29, 111, 235, 0.3);
+          border: 1px solid rgba(96, 165, 250, 0.4);
           display: flex;
           align-items: center;
           justify-content: center;
-          border: 2px dashed var(--grey-300);
+          color: var(--blue-300);
+          flex-shrink: 0;
         }
 
-        .map-placeholder-inner {
+        .location-company-name {
+          font-family: var(--font-display);
+          font-weight: 700;
+          font-size: 0.9375rem;
+          color: white;
+          display: block;
+        }
+
+        .location-address-tag {
+          font-size: 0.72rem;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          color: rgba(255, 255, 255, 0.45);
+          font-weight: 600;
+        }
+
+        .location-address-text {
+          font-style: normal;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          gap: var(--sp-sm);
-          text-align: center;
-          color: var(--grey-500);
+          gap: 0.2rem;
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 0.9375rem;
+          padding-left: 0.25rem;
+          border-left: 2px solid var(--blue-500);
+          margin-left: 0.25rem;
         }
 
-        .map-placeholder-inner p {
-          font-size: 0.875rem;
-          max-width: 260px;
-          line-height: 1.5;
+        .address-line--postcode {
+          color: var(--blue-300);
+          font-weight: 500;
+          margin-top: 0.15rem;
+        }
+
+        .address-line--postcode strong {
+          color: #ffffff;
+          letter-spacing: 0.05em;
+        }
+
+        .location-address-actions {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding-top: 0.35rem;
+        }
+
+        .btn-copy-address {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.45rem 0.85rem;
+          border-radius: var(--radius-md);
+          font-size: 0.8125rem;
+          font-weight: 600;
+          background: rgba(255, 255, 255, 0.09);
+          color: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          cursor: pointer;
+          transition: all var(--transition-fast);
+        }
+
+        .btn-copy-address:hover {
+          background: rgba(255, 255, 255, 0.18);
+          color: #ffffff;
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-copy-address.copied {
+          background: rgba(16, 185, 129, 0.22);
+          border-color: rgba(16, 185, 129, 0.6);
+          color: #6ee7b7;
+        }
+
+        .btn-call-workshop {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.45rem 0.85rem;
+          border-radius: var(--radius-md);
+          font-size: 0.8125rem;
+          font-weight: 600;
+          background: rgba(29, 111, 235, 0.2);
+          color: var(--blue-300);
+          border: 1px solid rgba(29, 111, 235, 0.35);
+          text-decoration: none;
+          transition: all var(--transition-fast);
+        }
+
+        .btn-call-workshop:hover {
+          background: var(--blue-600);
+          color: #ffffff;
+          border-color: var(--blue-600);
+        }
+
+        .location-amenities {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .amenity-item {
+          display: flex;
+          align-items: center;
+          gap: 0.625rem;
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.78);
+        }
+
+        .amenity-icon {
+          font-size: 1rem;
+          flex-shrink: 0;
+        }
+
+        /* Prominent Get Directions CTA */
+        .location-cta-box {
+          margin-top: auto;
+          padding-top: 0.5rem;
+        }
+
+        .btn--get-directions {
+          width: 100%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.625rem;
+          padding: 0.95rem 1.5rem;
+          font-size: 1.05rem;
+          font-weight: 700;
+          font-family: var(--font-display);
+          background: linear-gradient(135deg, #1d6feb 0%, #174ab8 100%);
+          color: #ffffff;
+          border-radius: var(--radius-md);
+          text-decoration: none;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          box-shadow: 0 8px 24px -4px rgba(29, 111, 235, 0.5);
+          transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+          cursor: pointer;
+        }
+
+        .btn--get-directions:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 28px -4px rgba(29, 111, 235, 0.7);
+          filter: brightness(1.08);
+          color: #ffffff;
+        }
+
+        .btn-external-icon {
+          opacity: 0.8;
+          transition: transform var(--transition-fast);
+        }
+
+        .btn--get-directions:hover .btn-external-icon {
+          transform: translate(2px, -2px);
+          opacity: 1;
+        }
+
+        .location-cta-hint {
+          font-size: 0.72rem;
+          color: rgba(255, 255, 255, 0.45);
+          text-align: center;
+          margin-top: 0.5rem;
+          line-height: 1.4;
+        }
+
+        /* Right / Map Embed Panel */
+        .location-map-panel {
+          display: flex;
+          flex-direction: column;
+          background: #09122a;
+          min-height: 460px;
+          position: relative;
+        }
+
+        .map-panel-bar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem 1.25rem;
+          background: rgba(13, 27, 62, 0.95);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .map-status {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.8125rem;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.85);
+        }
+
+        .map-status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #10b981;
+          box-shadow: 0 0 8px #10b981;
+        }
+
+        .map-fullscreen-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: var(--blue-300);
+          text-decoration: none;
+          transition: color var(--transition-fast);
+        }
+
+        .map-fullscreen-link:hover {
+          color: #ffffff;
+        }
+
+        .map-frame-wrapper {
+          flex: 1;
+          position: relative;
+          min-height: 380px;
+          width: 100%;
+          background: #0e1e42;
+        }
+
+        .map-iframe {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border: 0;
+          display: block;
+        }
+
+        .map-panel-caption {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+          padding: 0.75rem 1.25rem;
+          background: rgba(13, 27, 62, 0.95);
+          border-top: 1px solid rgba(255, 255, 255, 0.08);
+          font-size: 0.8125rem;
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .map-caption-address {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+        }
+
+        .map-caption-pin {
+          color: var(--blue-400);
+          flex-shrink: 0;
+        }
+
+        .map-caption-cta {
+          color: var(--blue-300);
+          font-weight: 600;
+          text-decoration: none;
+          transition: color var(--transition-fast);
+        }
+
+        .map-caption-cta:hover {
+          color: #ffffff;
+        }
+
+        @media (max-width: 640px) {
+          .location-info-panel {
+            padding: 1.25rem 1rem;
+            gap: 0.875rem;
+          }
+          .location-title {
+            font-size: 1.25rem;
+          }
+          .map-frame-wrapper {
+            min-height: 300px;
+          }
+          .map-panel-bar,
+          .map-panel-caption {
+            padding: 0.625rem 1rem;
+          }
+          .map-panel-caption {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.35rem;
+          }
         }
       `}</style>
     </section>
