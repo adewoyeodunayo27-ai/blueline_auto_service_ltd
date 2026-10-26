@@ -63,11 +63,6 @@ export default function Footer() {
                   alt="Blueline Auto Services Ltd Logo"
                   className="footer-logo-img"
                 />
-                <div>
-                  <span className="footer-logo-name">BLUELINE</span>
-                  <span className="footer-logo-sub">AUTO SERVICES LTD</span>
-                  <span className="footer-logo-slogan">Driven by Trust. Powered by Excellence.</span>
-                </div>
               </Link>
               <p className="footer-brand-desc">
                 Providing professional automotive services across the United Kingdom, including vehicle
@@ -232,43 +227,19 @@ export default function Footer() {
           margin-bottom: var(--sp-md);
         }
         .footer-logo-img {
-          width: 58px;
-          height: 58px;
+          width: 64px;
+          height: 64px;
           border-radius: 50%;
           object-fit: cover;
           display: block;
           flex-shrink: 0;
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
           border: 2px solid var(--accent);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .footer-logo div {
-          display: flex;
-          flex-direction: column;
-          line-height: 1.1;
-        }
-        .footer-logo-name {
-          font-family: var(--font-display);
-          font-size: 1.125rem;
-          font-weight: 900;
-          color: var(--accent-light);
-          letter-spacing: 0.04em;
-        }
-        .footer-logo-sub {
-          font-size: 0.5rem;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-          color: var(--grey-500);
-          text-transform: uppercase;
-        }
-
-        .footer-logo-slogan {
-          font-family: var(--font-body);
-          font-size: 0.625rem;
-          font-weight: 600;
-          color: var(--blue-300);
-          letter-spacing: 0.02em;
-          margin-top: 3px;
-          line-height: 1.2;
+        .footer-logo:hover .footer-logo-img {
+          transform: scale(1.05);
+          box-shadow: 0 6px 20px rgba(29, 111, 235, 0.4);
         }
 
         .footer-brand-desc {

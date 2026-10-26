@@ -96,7 +96,7 @@ export default function Header() {
       >
         <div className="container header-container">
           <div className="header-inner">
-            {/* Logo, Company Name & Slogan */}
+            {/* Official Logo */}
             <Link
               to="/"
               className="brand-logo"
@@ -108,13 +108,6 @@ export default function Header() {
                 alt="Blueline Auto Services Ltd Official Logo"
                 className="brand-logo-img"
               />
-              <div className="brand-logo-text">
-                <div className="brand-title-wrap">
-                  <span className="brand-name">BLUELINE</span>
-                  <span className="brand-tagline">AUTO SERVICES LTD</span>
-                </div>
-                <span className="brand-slogan">Driven by Trust. Powered by Excellence.</span>
-              </div>
             </Link>
 
             {/* Desktop Navigation Links */}
@@ -171,16 +164,11 @@ export default function Header() {
         aria-label="Mobile Navigation Menu"
       >
         <div className="mobile-nav-inner">
-          {/* Mobile Header Brand Display with Slogan */}
+          {/* Mobile Header Brand Display */}
           <div className="mobile-brand-bar">
-            <img src="/logo.png" alt="Blueline Auto Services Ltd Logo" className="mobile-logo-thumb" />
-            <div className="mobile-brand-text">
-              <div className="mobile-brand-title-wrap">
-                <span className="mobile-brand-title">BLUELINE</span>
-                <span className="mobile-brand-sub">AUTO SERVICES LTD</span>
-              </div>
-              <span className="mobile-brand-slogan">Driven by Trust. Powered by Excellence.</span>
-            </div>
+            <Link to="/" onClick={closeMobile} aria-label="Return to Home">
+              <img src="/logo.png" alt="Blueline Auto Services Ltd Logo" className="mobile-logo-thumb" />
+            </Link>
           </div>
 
           {/* Navigation Links */}
@@ -433,109 +421,32 @@ export default function Header() {
         }
 
         .brand-logo-img {
-          width: 52px;
-          height: 52px;
+          width: 58px;
+          height: 58px;
           border-radius: 50%;
           object-fit: cover;
           flex-shrink: 0;
           border: 2px solid #1D6FEB;
-          box-shadow: 0 2px 10px rgba(11, 21, 40, 0.15);
+          box-shadow: 0 2px 12px rgba(11, 21, 40, 0.18);
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .brand-logo-text {
-          display: flex;
-          flex-direction: column;
-          line-height: 1.15;
-          min-width: 0;
-        }
-
-        .brand-title-wrap {
-          display: flex;
-          align-items: baseline;
-          gap: 0.35rem;
-          flex-wrap: wrap;
-        }
-
-        .brand-name {
-          font-family: var(--font-display, 'Outfit', sans-serif);
-          font-size: 1.25rem;
-          font-weight: 900;
-          color: #0B1528;
-          letter-spacing: 0.04em;
-          transition: color 0.2s ease;
-          line-height: 1.1;
-        }
-
-        .brand-logo:hover .brand-name {
-          color: #1D6FEB;
-        }
-
-        .brand-tagline {
-          font-family: var(--font-body, 'Inter', sans-serif);
-          font-size: 0.65rem;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-          color: #475569;
-          text-transform: uppercase;
-        }
-
-        .brand-slogan {
-          font-family: var(--font-body, 'Inter', sans-serif);
-          font-size: 0.6875rem;
-          font-weight: 600;
-          color: #1D6FEB;
-          letter-spacing: 0.015em;
-          margin-top: 2px;
-          line-height: 1.2;
-          white-space: nowrap;
-        }
-
-        @media (max-width: 1024px) {
-          .brand-name {
-            font-size: 1.15rem;
-          }
-          .brand-slogan {
-            font-size: 0.625rem;
-          }
+        .brand-logo:hover .brand-logo-img {
+          transform: scale(1.06);
+          box-shadow: 0 4px 18px rgba(29, 111, 235, 0.35);
         }
 
         @media (max-width: 640px) {
-          .brand-logo {
-            gap: 0.6rem;
-          }
           .brand-logo-img {
-            width: 44px;
-            height: 44px;
-          }
-          .brand-name {
-            font-size: 1.05rem;
-          }
-          .brand-tagline {
-            font-size: 0.55rem;
-          }
-          .brand-slogan {
-            font-size: 0.5625rem;
-            letter-spacing: 0;
+            width: 48px;
+            height: 48px;
           }
         }
 
         @media (max-width: 360px) {
-          .brand-logo {
-            gap: 0.45rem;
-          }
           .brand-logo-img {
-            width: 38px;
-            height: 38px;
-          }
-          .brand-name {
-            font-size: 0.9375rem;
-          }
-          .brand-tagline {
-            font-size: 0.5rem;
-          }
-          .brand-slogan {
-            font-size: 0.5rem;
+            width: 42px;
+            height: 42px;
           }
         }
 
