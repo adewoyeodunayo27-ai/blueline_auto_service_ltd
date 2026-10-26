@@ -170,12 +170,8 @@ export default function Header() {
         <div className="mobile-nav-inner">
           {/* Mobile Header Brand Display */}
           <div className="mobile-brand-bar">
-            <Link to="/" onClick={closeMobile} aria-label="Return to Home" className="mobile-brand-link">
+            <Link to="/" onClick={closeMobile} aria-label="Return to Home">
               <img src="/logo.png" alt="Blueline Auto Services Ltd Logo" className="mobile-logo-thumb" />
-              <div className="mobile-brand-text">
-                <span className="mobile-brand-name">Blueline Auto Services Ltd</span>
-                <span className="mobile-brand-slogan">Driving Excellence, Delivering Reliability.</span>
-              </div>
             </Link>
           </div>
 
