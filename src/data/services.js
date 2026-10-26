@@ -22,6 +22,28 @@ export const SERVICES = [
   },
   {
     id: 2,
+    slug: 'van-for-moving-load-transportation',
+    title: 'Van for Moving & Load Transportation',
+    price: 'From €80',
+    priceDisplay: 'From €80 upwards',
+    priceNote: 'Prices start from €80 and increase depending on distance, load size, duration, and additional services. Contact us for a personalised quotation.',
+    shortDesc: 'Reliable Luton van transportation service that safely transports furniture, household belongings, boxes, appliances, student belongings, and other loads across Doncaster and nationwide.',
+    longDesc: 'Our dedicated Van for Moving & Load Transportation service transports furniture, household belongings, boxes, appliances, student belongings, and other loads with the utmost care. Using our spacious Luton removal van equipped with a hydraulic tail lift, heavy-duty straps, and protective transit blankets, we ensure your belongings reach their destination securely across Doncaster, South Yorkshire, and nationwide.',
+    icon: 'Truck',
+    image: '/images/fleet/large-luton-van.jpg',
+    features: [
+      'Transports furniture, household belongings, boxes & appliances',
+      'Student belongings, office relocations & bulky loads',
+      'Large Luton removal van with hydraulic tail lift',
+      'Protective transit blankets, tie-down straps & trolley equipment',
+      'Local Doncaster removals and UK nationwide transportation',
+      'Competitive pricing starting from €80 upwards'
+    ],
+    whatsappCta: 'Book a Moving Van on WhatsApp',
+    whatsappUrl: 'https://wa.me/447757772952?text=Hello%20Blueline%20Auto%20Services%2C%20I%20would%20like%20to%20enquire%20about%20booking%20the%20Van%20for%20Moving%20%26%20Load%20Transportation%20service%20(From%20%E2%82%AC80).'
+  },
+  {
+    id: 3,
     slug: 'vehicle-hire',
     title: 'Vehicle & Commercial Hire',
     shortDesc: 'Flexible short-term and long-term rental options for personal cars, executive saloons, and commercial vans.',
@@ -38,7 +60,7 @@ export const SERVICES = [
     ]
   },
   {
-    id: 3,
+    id: 4,
     slug: 'servicing-mot',
     title: 'Vehicle Servicing & MOT',
     shortDesc: 'Interim, full, and major servicing following manufacturer guidelines using premium OEM-grade parts.',
@@ -55,7 +77,7 @@ export const SERVICES = [
     ]
   },
   {
-    id: 4,
+    id: 5,
     slug: 'mechanical-repairs',
     title: 'Diagnostics & Mechanical Repairs',
     shortDesc: 'Advanced computer diagnostics, engine maintenance, clutch replacements, brakes, and suspension repairs.',
@@ -72,7 +94,7 @@ export const SERVICES = [
     ]
   },
   {
-    id: 5,
+    id: 6,
     slug: 'recovery-transport',
     title: 'Vehicle Recovery & Transport',
     shortDesc: '24/7 rapid breakdown assistance, accident recovery, and safe nationwide vehicle transportation.',
@@ -89,7 +111,7 @@ export const SERVICES = [
     ]
   },
   {
-    id: 6,
+    id: 7,
     slug: 'valeting-detailing',
     title: 'Valeting & Professional Detailing',
     shortDesc: 'Showroom-finish hand washing, machine polishing, interior sanitisation, and protective paint coatings.',
@@ -145,6 +167,7 @@ export const PRICE_LIST = [
       { name: 'Mid-Size / Family SUV (Per Day)', price: '£55.00 / day' },
       { name: 'Small Panel Van (Short Wheelbase)', price: '£50.00 / day' },
       { name: 'Large Luton Van (Tail Lift Included)', price: '£75.00 / day' },
+      { name: 'Van for Moving & Load Transportation', price: 'From €80' },
       { name: 'Weekly Hire Discount (7+ Days)', price: '15% Off' },
       { name: 'Long Term Monthly Corporate Lease', price: 'From £350.00 / mo' },
     ]
@@ -165,6 +188,7 @@ export const PRICE_LIST = [
     category: 'Recovery & Transport',
     icon: 'AlertTriangle',
     items: [
+      { name: 'Van for Moving & Load Transportation', price: 'From €80' },
       { name: 'Local Breakdown Recovery (Doncaster Area)', price: 'From £60.00' },
       { name: 'Emergency Call-out (Out of Hours)', price: 'From £85.00' },
       { name: 'Nationwide Vehicle Transport (Per Loaded Mile)', price: '£1.80 / mile' },

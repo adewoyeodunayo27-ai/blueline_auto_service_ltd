@@ -6,8 +6,9 @@ import { SERVICES } from '../data/services.js';
 import { BUSINESS } from '../data/business.js';
 import { 
   ArrowRight, ShieldCheck, Wrench, Clock, Phone, CheckCircle, 
-  Car, Sparkles, AlertTriangle, Key, Tag
+  Car, Sparkles, AlertTriangle, Key, Tag, Info
 } from 'lucide-react';
+import { WhatsAppIcon } from '../components/SocialIcons.jsx';
 
 export default function HomePage({ onBookingOpen }) {
   // Select 4 showcase vehicles for homepage
@@ -109,18 +110,58 @@ export default function HomePage({ onBookingOpen }) {
 
           <div className="services-teaser-grid">
             {featuredServices.map((service) => (
-              <div key={service.id} className="service-teaser-card reveal">
+              <div key={service.id} className={`service-teaser-card reveal${service.price ? ' service-teaser-card--featured' : ''}`}>
                 <div className="service-teaser-img-wrap">
-                  <img src={service.image} alt={service.title} className="service-teaser-img" loading="lazy" />
+                  <img src={service.image} alt={`${service.title} - Blueline Auto Services Ltd`} className="service-teaser-img" loading="lazy" />
                   <span className="service-teaser-badge">{service.category || 'Service'}</span>
+                  {service.price && (
+                    <span className="service-teaser-price-pill">{service.price}</span>
+                  )}
                 </div>
                 <div className="service-teaser-body">
                   <h3 className="service-teaser-title">{service.title}</h3>
+
+                  {service.price && (
+                    <div className="service-teaser-prominent-price" aria-label={`Price: ${service.priceDisplay || service.price}`}>
+                      <span className="teaser-price-from">From</span>
+                      <span className="teaser-price-currency">€</span>
+                      <span className="teaser-price-val">80</span>
+                      <span className="teaser-price-upwards">upwards</span>
+                    </div>
+                  )}
+
                   <p className="service-teaser-desc">{service.shortDesc}</p>
-                  <Link to="/services" className="service-teaser-link">
-                    <span>Learn More</span>
-                    <ArrowRight size={14} />
-                  </Link>
+
+                  {service.priceNote && (
+                    <div className="service-teaser-pricing-note">
+                      <Info size={13} className="teaser-note-icon" aria-hidden="true" />
+                      <span>{service.priceNote}</span>
+                    </div>
+                  )}
+
+                  {service.whatsappCta ? (
+                    <div className="service-teaser-btn-stack">
+                      <a
+                        href={service.whatsappUrl || "https://wa.me/447757772952"}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="service-teaser-wa-btn"
+                        aria-label={`${service.whatsappCta} on +44 7757 772952`}
+                      >
+                        <WhatsAppIcon size={16} />
+                        <span>{service.whatsappCta}</span>
+                      </a>
+                      <Link to="/services" className="service-teaser-link">
+                        <span>Full Details</span>
+                        <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                  ) : (
+                    <Link to="/services" className="service-teaser-link">
+                      <span>Learn More</span>
+                      <ArrowRight size={14} />
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}
@@ -438,6 +479,109 @@ export default function HomePage({ onBookingOpen }) {
           line-height: 1.55;
           margin-bottom: 1rem;
           flex: 1;
+        }
+        .service-teaser-card--featured {
+          border-color: #bfdbfe;
+          box-shadow: 0 4px 18px rgba(29, 111, 235, 0.08);
+        }
+        .service-teaser-price-pill {
+          position: absolute;
+          bottom: 10px;
+          left: 10px;
+          background: #10b981;
+          color: #ffffff;
+          font-size: 0.75rem;
+          font-weight: 800;
+          letter-spacing: 0.03em;
+          padding: 0.25rem 0.65rem;
+          border-radius: 999px;
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          box-shadow: 0 4px 10px rgba(16, 185, 129, 0.35);
+        }
+        .service-teaser-prominent-price {
+          display: flex;
+          align-items: baseline;
+          gap: 0.2rem;
+          padding: 0.2rem 0 0.45rem;
+          margin-bottom: 0.35rem;
+          border-bottom: 1px solid #f1f5f9;
+        }
+        .teaser-price-from {
+          font-size: 0.75rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          color: #64748b;
+          letter-spacing: 0.04em;
+        }
+        .teaser-price-currency {
+          font-family: var(--font-display);
+          font-size: 1.1rem;
+          font-weight: 800;
+          color: var(--accent);
+        }
+        .teaser-price-val {
+          font-family: var(--font-display);
+          font-size: 1.55rem;
+          font-weight: 900;
+          line-height: 1;
+          color: var(--accent);
+          letter-spacing: -0.02em;
+        }
+        .teaser-price-upwards {
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #64748b;
+          margin-left: 0.2rem;
+        }
+        .service-teaser-pricing-note {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.35rem;
+          background: #eff6ff;
+          border: 1px solid #bfdbfe;
+          border-radius: 6px;
+          padding: 0.45rem 0.6rem;
+          margin-bottom: 0.85rem;
+          font-size: 0.735rem;
+          line-height: 1.4;
+          color: #1e40af;
+          font-weight: 500;
+        }
+        .teaser-note-icon {
+          flex-shrink: 0;
+          color: #1d6feb;
+          margin-top: 1px;
+        }
+        .service-teaser-btn-stack {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          margin-top: auto;
+        }
+        .service-teaser-wa-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.45rem;
+          width: 100%;
+          padding: 0.65rem 0.85rem;
+          border-radius: 8px;
+          background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+          color: #ffffff;
+          font-family: var(--font-display);
+          font-size: 0.825rem;
+          font-weight: 700;
+          letter-spacing: 0.01em;
+          text-decoration: none;
+          box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .service-teaser-wa-btn:hover {
+          background: linear-gradient(135deg, #22bf5b 0%, #0e7266 100%);
+          box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+          transform: translateY(-2px);
+          color: #ffffff;
         }
         .service-teaser-link {
           display: inline-flex;
