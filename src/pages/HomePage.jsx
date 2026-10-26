@@ -142,13 +142,13 @@ export default function HomePage({ onBookingOpen }) {
       <section className="section fleet-teaser-section" aria-labelledby="teaser-fleet-heading">
         <div className="container">
           <header className="section__header reveal">
-            <span className="section__eyebrow">Our Showroom & Hire</span>
+            <span className="section__eyebrow">Our Showroom &amp; Hire</span>
             <h2 id="teaser-fleet-heading" className="section__title">
               Featured <span className="highlight">Vehicles</span>
             </h2>
             <div className="divider" />
             <p className="section__subtitle" style={{ marginTop: 'var(--sp-md)' }}>
-              Check out a selection of our clean, road-tested vehicles available for hire or purchase.
+              Clean, road-tested vehicles available for hire or purchase — fully insured &amp; ready to go.
             </p>
           </header>
 
@@ -158,42 +158,85 @@ export default function HomePage({ onBookingOpen }) {
               const rawNumber = vehicle.price.replace('From ', '').replace('£', '');
 
               return (
-                <article key={vehicle.id} className="card fleet-card reveal">
-                  <div className="fleet-card-img-wrap">
+                <article key={vehicle.id} className="fv-card reveal">
+                  {/* ── Image ── */}
+                  <div className="fv-img-wrap">
                     <img
                       src={vehicle.image}
                       alt={vehicle.name}
-                      className="fleet-card-img"
+                      className="fv-img"
                       loading="lazy"
                     />
-                    <span className="fleet-category-badge">{vehicle.category}</span>
-                  </div>
-                  <div className="fleet-card-body">
-                    <h3 className="fleet-card-name">{vehicle.name}</h3>
-                    <div className="fleet-card-price-row">
-                      <div className="fleet-card-price-main">
-                        {isFromPrice && <span className="price-from-label">From</span>}
-                        <span className="price-currency">£</span>
-                        <span className="price-amount">{rawNumber}</span>
-                        {vehicle.pricePeriod && <span className="price-period">{vehicle.pricePeriod}</span>}
+                    {/* deep gradient scrim */}
+                    <div className="fv-img-scrim" aria-hidden="true" />
+
+                    {/* top-left: category pill */}
+                    <span className="fv-badge fv-badge--cat">{vehicle.category}</span>
+
+                    {/* top-right: for-sale or hire badge */}
+                    {vehicle.salePrice ? (
+                      <span className="fv-badge fv-badge--sale">
+                        <Tag size={10} />
+                        For Sale
+                      </span>
+                    ) : (
+                      <span className="fv-badge fv-badge--type">
+                        {vehicle.category === 'Recovery' ? 'Recovery' : 'Hire Available'}
+                      </span>
+                    )}
+
+                    {/* bottom price block */}
+                    <div className="fv-price-overlay">
+                      <div className="fv-price-block">
+                        {isFromPrice && <span className="fv-price-from">From</span>}
+                        <span className="fv-price-main">
+                          <span className="fv-currency">£</span>
+                          <span className="fv-amount">{rawNumber}</span>
+                        </span>
+                        {vehicle.pricePeriod && (
+                          <span className="fv-price-period">{vehicle.pricePeriod}</span>
+                        )}
                       </div>
                       {vehicle.salePrice && (
-                        <span className="fleet-card-sale-badge">
+                        <div className="fv-sale-pill">
+                          <Tag size={9} />
                           Sale: {vehicle.salePrice}
-                        </span>
+                        </div>
                       )}
                     </div>
-                    <p className="fleet-card-desc">{vehicle.description}</p>
-                    <div className="fleet-card-actions">
-                      <button
-                        className="btn btn--primary btn--sm"
-                        onClick={() => onBookingOpen && onBookingOpen(vehicle)}
-                        aria-label={`Enquire about ${vehicle.name}`}
-                      >
-                        <span>Book / Enquire</span>
-                        <ArrowRight size={14} />
-                      </button>
+                  </div>
+
+                  {/* ── Body ── */}
+                  <div className="fv-body">
+                    {/* vehicle name */}
+                    <h3 className="fv-name">{vehicle.name}</h3>
+
+                    {/* spec chips row */}
+                    <div className="fv-specs">
+                      <span className="fv-spec-chip fv-spec-chip--cat">{vehicle.category}</span>
+                      <span className={`fv-spec-chip ${vehicle.available ? 'fv-spec-chip--avail' : 'fv-spec-chip--unavail'}`}>
+                        <span className="fv-spec-dot" />
+                        {vehicle.available ? 'Available Now' : 'Unavailable'}
+                      </span>
                     </div>
+
+                    <p className="fv-desc">{vehicle.description}</p>
+
+                    {vehicle.note && (
+                      <div className="fv-note">
+                        <ShieldCheck size={13} aria-hidden="true" />
+                        <span>{vehicle.note}</span>
+                      </div>
+                    )}
+
+                    <button
+                      className="fv-cta"
+                      onClick={() => onBookingOpen && onBookingOpen(vehicle)}
+                      aria-label={`Book or enquire about ${vehicle.name}`}
+                    >
+                      <span>Book / Enquire</span>
+                      <ArrowRight size={15} className="fv-cta-arrow" />
+                    </button>
                   </div>
                 </article>
               );
@@ -202,7 +245,7 @@ export default function HomePage({ onBookingOpen }) {
 
           <div className="section-footer-cta reveal">
             <Link to="/cars" className="btn btn--primary btn--lg">
-              <span>View Full Fleet & Showroom ({FLEET.length}+ Vehicles)</span>
+              <span>View Full Fleet &amp; Showroom ({FLEET.length}+ Vehicles)</span>
               <ArrowRight size={18} />
             </Link>
           </div>
@@ -411,12 +454,341 @@ export default function HomePage({ onBookingOpen }) {
           text-decoration: underline;
         }
 
-        /* Featured fleet grid */
+        /* ══════════════════════════════════════════
+           FEATURED VEHICLE CARDS — PREMIUM REDESIGN
+           ══════════════════════════════════════════ */
         .featured-fleet-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: var(--sp-lg);
+          gap: 1.5rem;
           margin-bottom: var(--sp-2xl);
+        }
+
+        /* ── Card Shell ── */
+        .fv-card {
+          display: flex;
+          flex-direction: column;
+          border-radius: 16px;
+          overflow: hidden;
+          background: #ffffff;
+          border: 1px solid #e8edf5;
+          box-shadow:
+            0 1px 3px rgba(11,21,40,0.06),
+            0 4px 16px rgba(11,21,40,0.06);
+          transition: transform 0.32s cubic-bezier(0.22,1,0.36,1),
+                      box-shadow 0.32s cubic-bezier(0.22,1,0.36,1);
+          position: relative;
+        }
+        .fv-card::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: 16px;
+          border: 1.5px solid transparent;
+          background: linear-gradient(135deg,rgba(29,111,235,0.35),rgba(29,111,235,0)) border-box;
+          -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+          -webkit-mask-composite: destination-out;
+          mask-composite: exclude;
+          opacity: 0;
+          transition: opacity 0.32s ease;
+          pointer-events: none;
+          z-index: 1;
+        }
+        .fv-card:hover {
+          transform: translateY(-8px);
+          box-shadow:
+            0 2px 4px rgba(11,21,40,0.04),
+            0 20px 48px rgba(29,111,235,0.18),
+            0 8px 20px rgba(0,0,0,0.08);
+        }
+        .fv-card:hover::before {
+          opacity: 1;
+        }
+
+        /* ── Image Area ── */
+        .fv-img-wrap {
+          position: relative;
+          height: 240px;
+          overflow: hidden;
+          background: #0a1628;
+          flex-shrink: 0;
+        }
+        .fv-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.55s cubic-bezier(0.22,1,0.36,1);
+          display: block;
+        }
+        .fv-card:hover .fv-img {
+          transform: scale(1.08);
+        }
+
+        /* Deep cinematic gradient scrim */
+        .fv-img-scrim {
+          position: absolute;
+          inset: 0;
+          background:
+            linear-gradient(
+              180deg,
+              rgba(10,22,40,0.0) 0%,
+              rgba(10,22,40,0.0) 42%,
+              rgba(10,22,40,0.55) 72%,
+              rgba(10,22,40,0.92) 100%
+            );
+          pointer-events: none;
+        }
+
+        /* ── Pill Badges ── */
+        .fv-badge {
+          position: absolute;
+          top: 14px;
+          font-size: 0.65rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          padding: 0.28rem 0.7rem;
+          border-radius: 999px;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .fv-badge--cat {
+          left: 14px;
+          background: rgba(11,21,40,0.7);
+          color: rgba(255,255,255,0.95);
+          border: 1px solid rgba(255,255,255,0.18);
+        }
+        .fv-badge--sale {
+          right: 14px;
+          background: rgba(220,38,38,0.85);
+          color: #ffffff;
+          border: 1px solid rgba(255,120,120,0.3);
+        }
+        .fv-badge--type {
+          right: 14px;
+          background: rgba(29,111,235,0.82);
+          color: #ffffff;
+          border: 1px solid rgba(100,160,255,0.3);
+        }
+
+        /* ── Price Overlay (bottom of image) ── */
+        .fv-price-overlay {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 0.75rem 1.1rem 0.85rem;
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 0.4rem;
+        }
+        .fv-price-block {
+          display: inline-flex;
+          align-items: baseline;
+          gap: 0.12rem;
+          line-height: 1;
+        }
+        .fv-price-from {
+          font-size: 0.72rem;
+          font-weight: 600;
+          color: rgba(255,255,255,0.75);
+          margin-right: 0.22rem;
+          align-self: center;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+        .fv-price-main {
+          display: inline-flex;
+          align-items: baseline;
+          gap: 0.04rem;
+          font-family: var(--font-display);
+        }
+        .fv-currency {
+          font-size: 1.05rem;
+          font-weight: 800;
+          color: #ffffff;
+          line-height: 1;
+          margin-bottom: 2px;
+        }
+        .fv-amount {
+          font-size: 2rem;
+          font-weight: 900;
+          color: #ffffff;
+          line-height: 1;
+          letter-spacing: -0.04em;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .fv-price-period {
+          font-size: 0.78rem;
+          font-weight: 500;
+          color: rgba(255,255,255,0.7);
+          margin-left: 0.18rem;
+          align-self: flex-end;
+          margin-bottom: 2px;
+        }
+        .fv-sale-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.28rem;
+          font-size: 0.68rem;
+          font-weight: 700;
+          color: #fff;
+          background: rgba(220,38,38,0.7);
+          border: 1px solid rgba(255,150,150,0.3);
+          padding: 0.2rem 0.6rem;
+          border-radius: 999px;
+          backdrop-filter: blur(6px);
+          -webkit-backdrop-filter: blur(6px);
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+
+        /* ── Card Body ── */
+        .fv-body {
+          padding: 1.25rem 1.25rem 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.65rem;
+          flex: 1;
+          background: #ffffff;
+        }
+
+        .fv-name {
+          font-family: var(--font-display);
+          font-size: 1.15rem;
+          font-weight: 800;
+          color: #0b1528;
+          margin: 0;
+          line-height: 1.25;
+          letter-spacing: -0.01em;
+        }
+
+        /* ── Spec Chip Row ── */
+        .fv-specs {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+        .fv-spec-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+          font-size: 0.67rem;
+          font-weight: 700;
+          letter-spacing: 0.07em;
+          text-transform: uppercase;
+          padding: 0.22rem 0.6rem;
+          border-radius: 999px;
+        }
+        .fv-spec-chip--cat {
+          background: #eff6ff;
+          color: #1d6feb;
+          border: 1px solid #bfdbfe;
+        }
+        .fv-spec-chip--avail {
+          background: #f0fdf4;
+          color: #16a34a;
+          border: 1px solid #bbf7d0;
+        }
+        .fv-spec-chip--unavail {
+          background: #fef2f2;
+          color: #dc2626;
+          border: 1px solid #fecaca;
+        }
+        .fv-spec-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: currentColor;
+          display: inline-block;
+          animation: fvDotPulse 2s infinite ease-in-out;
+        }
+        @keyframes fvDotPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.45; transform: scale(0.8); }
+        }
+
+        .fv-desc {
+          font-size: 0.855rem;
+          color: #475569;
+          line-height: 1.6;
+          flex: 1;
+        }
+
+        /* ── Info Note ── */
+        .fv-note {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.45rem;
+          font-size: 0.75rem;
+          color: #1d6feb;
+          font-weight: 500;
+          background: #eff6ff;
+          border-radius: 8px;
+          padding: 0.5rem 0.75rem;
+          border: 1px solid #bfdbfe;
+          line-height: 1.4;
+        }
+        .fv-note svg {
+          flex-shrink: 0;
+          margin-top: 1px;
+          color: #1d6feb;
+        }
+
+        /* ── CTA Button ── */
+        .fv-cta {
+          margin-top: auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.55rem;
+          width: 100%;
+          padding: 0.8rem 1.25rem;
+          border-radius: 10px;
+          background: linear-gradient(135deg, #1d6feb 0%, #1557bf 100%);
+          color: #ffffff;
+          font-family: var(--font-display);
+          font-size: 0.875rem;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+          cursor: pointer;
+          transition:
+            background 0.2s ease,
+            transform 0.18s ease,
+            box-shadow 0.2s ease;
+          border: none;
+          position: relative;
+          overflow: hidden;
+        }
+        .fv-cta::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg,rgba(255,255,255,0.12) 0%,transparent 60%);
+          pointer-events: none;
+        }
+        .fv-cta-arrow {
+          transition: transform 0.2s ease;
+          flex-shrink: 0;
+        }
+        .fv-cta:hover {
+          background: linear-gradient(135deg, #1557bf 0%, #1048a8 100%);
+          box-shadow: 0 6px 20px rgba(29,111,235,0.45);
+          transform: translateY(-2px);
+        }
+        .fv-cta:hover .fv-cta-arrow {
+          transform: translateX(4px);
+        }
+        .fv-cta:active {
+          transform: translateY(0);
+          box-shadow: 0 2px 8px rgba(29,111,235,0.3);
         }
 
         .section-footer-cta {
@@ -487,6 +859,7 @@ export default function HomePage({ onBookingOpen }) {
           .featured-fleet-grid {
             grid-template-columns: repeat(2, 1fr);
           }
+          .fv-img-wrap { height: 230px; }
         }
         @media (max-width: 900px) {
           .welcome-grid {
@@ -505,6 +878,8 @@ export default function HomePage({ onBookingOpen }) {
           .featured-fleet-grid {
             grid-template-columns: 1fr;
           }
+          .fv-img-wrap { height: 210px; }
+          .fv-amount { font-size: 1.75rem; }
         }
       `}</style>
     </div>

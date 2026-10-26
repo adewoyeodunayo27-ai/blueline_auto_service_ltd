@@ -3,6 +3,12 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { BUSINESS } from '../data/business.js';
 import { Phone, Mail, Clock, Menu, X, ArrowRight } from 'lucide-react';
 
+/* Load Playfair Display for the brand slogan */
+const _sloganFont = document.createElement('link');
+_sloganFont.rel = 'stylesheet';
+_sloganFont.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600;1,700&display=swap';
+if (!document.head.querySelector('[href*="Playfair+Display"]')) document.head.appendChild(_sloganFont);
+
 const NAV_ITEMS = [
   { label: 'Home', path: '/' },
   { label: 'About Us', path: '/about' },
@@ -168,13 +174,6 @@ export default function Header() {
         aria-label="Mobile Navigation Menu"
       >
         <div className="mobile-nav-inner">
-          {/* Mobile Header Brand Display */}
-          <div className="mobile-brand-bar">
-            <Link to="/" onClick={closeMobile} aria-label="Return to Home">
-              <img src="/logo.png" alt="Blueline Auto Services Ltd Logo" className="mobile-logo-thumb" />
-            </Link>
-          </div>
-
           {/* Navigation Links */}
           <nav className="mobile-nav-menu" aria-label="Mobile Links">
             <ul className="mobile-nav-list" role="list">
@@ -442,7 +441,7 @@ export default function Header() {
         .brand-text {
           display: flex;
           flex-direction: column;
-          gap: 0.1rem;
+          gap: 0.2rem;
           min-width: 0;
         }
 
@@ -457,15 +456,21 @@ export default function Header() {
           display: block;
         }
 
+        /* ── Brand Slogan — Playfair Display Italic ── */
         .brand-slogan {
-          font-family: 'Inter', sans-serif;
-          font-size: 0.7rem;
-          font-weight: 500;
-          color: #4A6FA5;
-          letter-spacing: 0.06em;
+          font-family: 'Playfair Display', Georgia, serif;
+          font-style: italic;
+          font-weight: 600;
+          font-size: 0.8rem;
+          letter-spacing: 0.015em;
           white-space: nowrap;
           display: block;
-          font-style: italic;
+          /* Gradient text — blue to navy */
+          background: linear-gradient(90deg, #1d6feb 0%, #0e3fa6 55%, #1a56d6 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          line-height: 1.3;
         }
 
         @media (max-width: 1024px) {
@@ -473,7 +478,7 @@ export default function Header() {
             font-size: 1rem;
           }
           .brand-slogan {
-            font-size: 0.65rem;
+            font-size: 0.75rem;
           }
         }
 
@@ -487,8 +492,7 @@ export default function Header() {
             letter-spacing: -0.005em;
           }
           .brand-slogan {
-            font-size: 0.6rem;
-            letter-spacing: 0.04em;
+            font-size: 0.7rem;
           }
         }
 
@@ -504,7 +508,8 @@ export default function Header() {
             font-size: 0.8rem;
           }
           .brand-slogan {
-            display: none;
+            font-size: 0.65rem;
+            letter-spacing: 0.01em;
           }
         }
 
