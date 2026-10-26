@@ -96,10 +96,10 @@ export default function Header() {
       >
         <div className="container header-container">
           <div className="header-inner">
-            {/* Official Logo */}
+            {/* ── Brand Identity: Logo + Name + Slogan ── */}
             <Link
               to="/"
-              className="brand-logo"
+              className="brand-identity"
               onClick={closeMobile}
               aria-label="Blueline Auto Services Ltd — Return to Home"
             >
@@ -108,6 +108,10 @@ export default function Header() {
                 alt="Blueline Auto Services Ltd Official Logo"
                 className="brand-logo-img"
               />
+              <div className="brand-text">
+                <span className="brand-name">Blueline Auto Services Ltd</span>
+                <span className="brand-slogan">Driving Excellence, Delivering Reliability.</span>
+              </div>
             </Link>
 
             {/* Desktop Navigation Links */}
@@ -166,8 +170,12 @@ export default function Header() {
         <div className="mobile-nav-inner">
           {/* Mobile Header Brand Display */}
           <div className="mobile-brand-bar">
-            <Link to="/" onClick={closeMobile} aria-label="Return to Home">
+            <Link to="/" onClick={closeMobile} aria-label="Return to Home" className="mobile-brand-link">
               <img src="/logo.png" alt="Blueline Auto Services Ltd Logo" className="mobile-logo-thumb" />
+              <div className="mobile-brand-text">
+                <span className="mobile-brand-name">Blueline Auto Services Ltd</span>
+                <span className="mobile-brand-slogan">Driving Excellence, Delivering Reliability.</span>
+              </div>
             </Link>
           </div>
 
@@ -404,20 +412,24 @@ export default function Header() {
           gap: 1rem;
         }
 
-        /* ── Brand Logo & Text ── */
-        .brand-logo {
+        /* ── Brand Identity: Logo + Name + Slogan ── */
+        .brand-identity {
           display: flex;
           align-items: center;
-          gap: 0.75rem;
+          gap: 0.85rem;
           text-decoration: none;
           flex-shrink: 0;
           min-width: 0;
-          transition: transform 0.2s ease;
+          transition: opacity 0.2s ease;
         }
 
-        .brand-logo:hover .brand-logo-img {
+        .brand-identity:hover {
+          opacity: 0.9;
+        }
+
+        .brand-identity:hover .brand-logo-img {
           transform: scale(1.05);
-          box-shadow: 0 4px 16px rgba(29, 111, 235, 0.3);
+          box-shadow: 0 4px 18px rgba(29, 111, 235, 0.4);
         }
 
         .brand-logo-img {
@@ -428,25 +440,75 @@ export default function Header() {
           flex-shrink: 0;
           border: 2px solid #1D6FEB;
           box-shadow: 0 2px 12px rgba(11, 21, 40, 0.18);
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          transition: transform 0.22s ease, box-shadow 0.22s ease;
         }
 
-        .brand-logo:hover .brand-logo-img {
-          transform: scale(1.06);
-          box-shadow: 0 4px 18px rgba(29, 111, 235, 0.35);
+        .brand-text {
+          display: flex;
+          flex-direction: column;
+          gap: 0.1rem;
+          min-width: 0;
+        }
+
+        .brand-name {
+          font-family: 'Montserrat', 'Outfit', sans-serif;
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #0B1E40;
+          line-height: 1.2;
+          letter-spacing: -0.01em;
+          white-space: nowrap;
+          display: block;
+        }
+
+        .brand-slogan {
+          font-family: 'Inter', sans-serif;
+          font-size: 0.7rem;
+          font-weight: 500;
+          color: #4A6FA5;
+          letter-spacing: 0.06em;
+          white-space: nowrap;
+          display: block;
+          font-style: italic;
+        }
+
+        @media (max-width: 1024px) {
+          .brand-name {
+            font-size: 1rem;
+          }
+          .brand-slogan {
+            font-size: 0.65rem;
+          }
         }
 
         @media (max-width: 640px) {
           .brand-logo-img {
-            width: 48px;
-            height: 48px;
+            width: 46px;
+            height: 46px;
+          }
+          .brand-name {
+            font-size: 0.875rem;
+            letter-spacing: -0.005em;
+          }
+          .brand-slogan {
+            font-size: 0.6rem;
+            letter-spacing: 0.04em;
           }
         }
 
-        @media (max-width: 360px) {
+        @media (max-width: 420px) {
+          .brand-identity {
+            gap: 0.6rem;
+          }
           .brand-logo-img {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
+          }
+          .brand-name {
+            font-size: 0.8rem;
+          }
+          .brand-slogan {
+            display: none;
           }
         }
 
@@ -633,6 +695,13 @@ export default function Header() {
           border-bottom: 1px solid #F1F5F9;
         }
 
+        .mobile-brand-link {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          text-decoration: none;
+        }
+
         .mobile-logo-thumb {
           width: 44px;
           height: 44px;
@@ -645,36 +714,28 @@ export default function Header() {
         .mobile-brand-text {
           display: flex;
           flex-direction: column;
+          gap: 0.1rem;
           min-width: 0;
         }
 
-        .mobile-brand-title-wrap {
-          display: flex;
-          align-items: baseline;
-          gap: 0.35rem;
-        }
-
-        .mobile-brand-title {
-          font-family: var(--font-display, 'Outfit', sans-serif);
-          font-size: 1.125rem;
-          font-weight: 900;
-          color: #0B1528;
-          line-height: 1.1;
-        }
-
-        .mobile-brand-sub {
-          font-size: 0.55rem;
+        .mobile-brand-name {
+          font-family: 'Montserrat', 'Outfit', sans-serif;
+          font-size: 0.9375rem;
           font-weight: 700;
-          color: #64748B;
-          letter-spacing: 0.1em;
+          color: #0B1E40;
+          line-height: 1.2;
+          letter-spacing: -0.01em;
+          display: block;
         }
 
         .mobile-brand-slogan {
-          font-size: 0.65rem;
-          font-weight: 600;
-          color: #1D6FEB;
-          letter-spacing: 0.02em;
-          margin-top: 2px;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.625rem;
+          font-weight: 500;
+          color: #4A6FA5;
+          letter-spacing: 0.05em;
+          font-style: italic;
+          display: block;
         }
 
         .mobile-nav-list {
