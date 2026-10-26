@@ -73,7 +73,7 @@ export default function HomePage({ onBookingOpen }) {
             <div className="welcome-media reveal">
               <div className="welcome-card-showcase">
                 <img
-                  src="https://images.unsplash.com/photo-1632823471565-1ecdf5c6da4a?w=900&q=80"
+                  src="/images/gallery/modern-workshop-facility.jpg"
                   alt="Modern workshop facility at Blueline Auto Services Ltd"
                   className="welcome-main-img"
                   loading="lazy"
