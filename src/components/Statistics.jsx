@@ -5,14 +5,25 @@ import { Users, Wrench, Phone, Award } from 'lucide-react';
 const ICON_MAP = { Users, Wrench, Phone, Award };
 
 function useCountUp(target, duration = 1800, active = false) {
-  const [count, setCount] = useState('0');
+  const [count, setCount] = useState(target === '24/7' ? '24/7' : '0');
 
   useEffect(() => {
     if (!active) return;
-    const numericStr = target.replace(/[^0-9]/g, '');
-    const suffix = target.replace(/[0-9]/g, '');
-    const end = parseInt(numericStr, 10);
-    if (isNaN(end)) { setCount(target); return; }
+    if (target === '24/7') {
+      setCount('24/7');
+      return;
+    }
+    const match = target.match(/^(\d+)(.*)$/);
+    if (!match) {
+      setCount(target);
+      return;
+    }
+    const end = parseInt(match[1], 10);
+    const suffix = match[2] || '';
+    if (isNaN(end)) {
+      setCount(target);
+      return;
+    }
 
     let startTime = null;
     const step = (timestamp) => {
@@ -39,10 +50,9 @@ function StatItem({ stat, active, index }) {
         <Icon size={28} />
       </div>
       <div className="stat-value" aria-label={`${stat.value} ${stat.label}`}>
-        {active ? count : '—'}
+        {active ? count : (stat.value === '24/7' ? '24/7' : '—')}
       </div>
       <div className="stat-label">{stat.label}</div>
-      <p className="stat-note">Placeholder — to be confirmed</p>
     </div>
   );
 }
@@ -187,13 +197,7 @@ export default function Statistics() {
           color: var(--grey-300);
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          margin-bottom: var(--sp-sm);
-        }
-
-        .stat-note {
-          font-size: 0.7rem;
-          color: rgba(255,255,255,.35);
-          font-style: italic;
+          margin-bottom: 0;
         }
       `}</style>
     </section>
